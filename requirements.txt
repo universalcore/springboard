@@ -1,2 +1,2 @@
 unicore-cms
-Jinja2
+pyramid_jinja2
