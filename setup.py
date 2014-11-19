@@ -30,5 +30,9 @@ setup(name='springboard',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=requires
+      tests_require=requires,
+      entry_points="""\
+      [paste.app_factory]
+      main = springboard.application:main
+      """,
       )
