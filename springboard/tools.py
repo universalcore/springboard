@@ -8,7 +8,8 @@ from elasticgit import EG
 from elasticgit.commands.base import ToolCommand, CommandArgument
 from elasticgit.tools import add_command, run
 from elasticgit.utils import load_class, fqcn
-from uc_helper.helper import parse_repo_name
+
+from springboard.utils import parse_repo_name
 
 
 class YAMLFile(object):
