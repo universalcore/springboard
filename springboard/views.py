@@ -32,19 +32,20 @@ class SpringboardViews(object):
         defaults.update(context)
         return defaults
 
-    @view_config(route_name='home', renderer='templates/home.jinja2')
+    @view_config(route_name='home',
+                 renderer='springboard:templates/home.jinja2')
     def index_view(self):
         return self.context()
 
     @view_config(route_name='category',
-                 renderer='templates/category.jinja2')
+                 renderer='springboard:templates/category.jinja2')
     def category(self):
         uuid = self.request.matchdict['uuid']
         [category] = self.all_categories.filter(uuid=uuid)
         return self.context(category=category)
 
     @view_config(route_name='page',
-                 renderer='templates/page.jinja2')
+                 renderer='springboard:templates/page.jinja2')
     def page(self):
         uuid = self.request.matchdict['uuid']
         [page] = self.all_pages.filter(uuid=uuid)
