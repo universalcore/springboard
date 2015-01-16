@@ -2,3 +2,7 @@ unicore.content
 pyramid
 pyramid_jinja2
 pyyaml
+waitress
+python-dateutil
+libthumbor
+Markdown
