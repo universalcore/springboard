@@ -28,7 +28,7 @@ class BootstrapTool(ToolCommand):
             '-c', '--config',
             dest='config',
             help='The config file to use for bootstrapping.',
-            default='unicore.yaml',
+            default='bootstrap.yaml',
             type=YAMLFile()),
         CommandArgument(
             '-v', '--verbose',
