@@ -4,7 +4,9 @@ python:
 services:
   - elasticsearch
 install:
-  - pip install -r requirements-dev.txt --use-wheel
+  - pip install --upgrade pip
+  - pip install -r requirements-dev.txt
+  - pip install -e .
 script:
   - py.test springboard
 after_success:
