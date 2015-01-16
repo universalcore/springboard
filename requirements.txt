@@ -1,2 +1,3 @@
 unicore-cms
+pyyaml
 pyramid_jinja2
