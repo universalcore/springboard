@@ -53,3 +53,10 @@ class SpringboardViews(object):
             uuid=page.primary_category)
         return self.context(category=category,
                             page=page)
+
+    @view_config(route_name='flat_page',
+                 renderer='springboard:templates/flat_page.jinja2')
+    def flat_page(self):
+        slug = self.request.matchdict['slug']
+        [page] = self.all_pages.filter(language=self.language, slug=slug)
+        return self.context(page=page)

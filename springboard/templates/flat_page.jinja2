@@ -1,0 +1,16 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<div>
+    <div class="articles">
+        <div class="h1">
+            {{page.title}}
+        </div>
+
+        <div class="detail">
+            <div class="clr"></div>
+            <p>{{page.content|markdown}}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
