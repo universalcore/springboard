@@ -1,5 +1,5 @@
 unicore-cms
-elastic-git
+elastic-git>=0.3.3
 pyramid
 pyramid_jinja2
 pyyaml
