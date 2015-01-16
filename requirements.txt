@@ -1,3 +1,5 @@
 unicore-cms
-pyyaml
+elastic-git
+pyramid
 pyramid_jinja2
+pyyaml
