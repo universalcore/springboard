@@ -9,8 +9,10 @@ class TestViews(SpringboardTestCase):
     def setUp(self):
         self.workspace = self.mk_workspace()
         self.config = testing.setUp(settings={
-            'unicore.content_repo_url': self.workspace.repo.working_dir,
+            'unicore.repos_dir': self.working_dir,
+            'unicore.content_repo_url': self.workspace.working_dir,
         })
+        print self.workspace.working_dir
 
     def tearDown(self):
         testing.tearDown()
@@ -19,4 +21,4 @@ class TestViews(SpringboardTestCase):
         request = testing.DummyRequest()
         views = SpringboardViews(request)
         context = views.index_view()
-        print context
+        print context['all_pages'].count()

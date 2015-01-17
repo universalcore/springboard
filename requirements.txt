@@ -6,3 +6,4 @@ waitress
 python-dateutil
 libthumbor
 Markdown
+python-slugify

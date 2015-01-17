@@ -19,7 +19,8 @@ class SpringboardViews(object):
 
         repo_name = parse_repo_name(self.settings['unicore.content_repo_url'])
         repo_path = os.path.join('repos', repo_name)
-        self.workspace = EG.workspace(repo_path, index_prefix=repo_name)
+        self.workspace = EG.workspace(
+            repo_path, index_prefix=repo_name.lower().replace('.', '-'))
         self.all_categories = self.workspace.S(Category)
         self.all_pages = self.workspace.S(Page)
 

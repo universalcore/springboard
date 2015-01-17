@@ -15,8 +15,9 @@ class SpringboardTestCase(TestCase):
 
     destroy = 'KEEP_REPO' not in os.environ
     bootstrap_file = 'bootstrap.yaml'
+    working_dir = '.test_repos/'
 
-    def mk_workspace(self, working_dir='.test_repos/',
+    def mk_workspace(self, working_dir=None,
                      name=None,
                      url='http://localhost',
                      index_prefix=None,
@@ -24,6 +25,7 @@ class SpringboardTestCase(TestCase):
                      author_name='Test Kees',
                      author_email='kees@example.org'):
         name = name or self.id()
+        working_dir = working_dir or self.working_dir
         index_prefix = index_prefix or name.lower().replace('.', '-')
         auto_destroy = auto_destroy or self.destroy
         workspace = EG.workspace(os.path.join(working_dir, name), es={
