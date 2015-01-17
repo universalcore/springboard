@@ -1,3 +1,4 @@
+elastic-git
 unicore.content
 pyramid
 pyramid_jinja2
