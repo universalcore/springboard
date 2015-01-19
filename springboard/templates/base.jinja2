@@ -32,7 +32,7 @@
         <a href="/">{{ gettext("Home") }}</a>
         {% for nav in main_navigation_items %}
             <span>
-            l <a href="/content/list/{{nav.uuid}}/">{{nav.title}}</a>
+            l <a href="{{'category'|route_url(uuid=nav.uuid)}}">{{nav.title}}</a>
             </span>
         {% endfor %}
     </div>

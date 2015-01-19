@@ -1,6 +1,6 @@
 # List of content repositories to be working with
 repositories:
-  - 'https://github.com/universalcore/unicore-cms-content-gem-tz-qa'
+  - 'https://github.com/universalcore/unicore-cms-content-gem-tanzania'
 
 # List of models to be loaded and their mappings, if any.
 models:
