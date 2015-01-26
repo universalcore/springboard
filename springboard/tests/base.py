@@ -1,5 +1,7 @@
 import os
 import tempfile
+import pkg_resources
+import yaml
 
 from ConfigParser import ConfigParser
 from datetime import datetime
@@ -8,6 +10,7 @@ from unittest import TestCase
 from webtest import TestApp
 
 from elasticgit import EG
+from elasticgit.utils import load_class
 
 from slugify import slugify
 
@@ -19,7 +22,8 @@ from springboard.application import main
 class SpringboardTestCase(TestCase):
 
     destroy = 'KEEP_REPO' not in os.environ
-    bootstrap_file = 'bootstrap.yaml'
+    bootstrap_file = pkg_resources.resource_filename(
+        'springboard', 'tests/test_bootstrap.yaml')
     working_dir = '.test_repos/'
 
     def mk_workspace(self, working_dir=None,
@@ -43,6 +47,11 @@ class SpringboardTestCase(TestCase):
         workspace
         while not workspace.index_ready():
             pass
+
+        with open(self.bootstrap_file, 'r') as fp:
+            bootstrap_data = yaml.safe_load(fp)
+            for model, mapping in bootstrap_data['models'].items():
+                workspace.setup_custom_mapping(load_class(model), mapping)
 
         return workspace
 
@@ -135,7 +144,7 @@ class SpringboardTestCase(TestCase):
         workspace.refresh_index()
         return pages
 
-    def create_localisation(self, workspace, locale='eng_GB', **kwargs):
+    def mk_localisation(self, workspace, locale='eng_GB', **kwargs):
         data = {'locale': locale}
         data.update(kwargs)
         localisation = Localisation(data)

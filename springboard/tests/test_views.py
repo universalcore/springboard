@@ -60,4 +60,4 @@ class TestViews(SpringboardTestCase):
         views = SpringboardViews(
             self.mk_request(matchdict={'slug': page.slug}))
         context = views.flat_page()
-        print context
+        self.assertEqual(context['page'].uuid, page.uuid)
