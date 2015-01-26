@@ -1,14 +1,19 @@
 import os
+import tempfile
 
+from ConfigParser import ConfigParser
 from datetime import datetime
-
 from unittest import TestCase
+
+from webtest import TestApp
 
 from elasticgit import EG
 
 from slugify import slugify
 
 from unicore.content.models import Category, Page, Localisation
+
+from springboard.application import main
 
 
 class SpringboardTestCase(TestCase):
@@ -41,7 +46,47 @@ class SpringboardTestCase(TestCase):
 
         return workspace
 
-    def create_categories(
+    def mk_app(self, workspace, ini_config={}, settings={}, main=main,
+               extra_environ={}):
+        ini_defaults = {
+            'celery': {
+                'CELERY_ALWAYS_EAGER': True,
+            }
+        }
+        ini_defaults.update(ini_config)
+
+        settings_defaults = {
+            'unicore.repos_dir': self.working_dir,
+            'unicore.content_repo_url': workspace.working_dir,
+        }
+        settings_defaults.update(settings)
+
+        config_file = self.mk_configfile(ini_defaults)
+        app = TestApp(main({
+            '__file__': config_file,
+            'here': os.path.dirname(workspace.working_dir),
+        }, **settings_defaults), extra_environ=extra_environ)
+        return app
+
+    def mk_tempfile(self):
+        fp, pathname = tempfile.mkstemp(text=True)
+        self.addCleanup(os.unlink, pathname)
+        return os.fdopen(fp, 'w'), pathname
+
+    def mk_configfile(self, data):
+        fp, pathname = self.mk_tempfile()
+        with fp:
+            cp = ConfigParser()
+            # Do not lower case every key
+            cp.optionxform = str
+            for section, section_items in data.items():
+                cp.add_section(section)
+                for key, value in section_items.items():
+                    cp.set(section, key, value)
+            cp.write(fp)
+        return pathname
+
+    def mk_categories(
             self, workspace, count=2, language='eng_GB', **kwargs):
         categories = []
         for i in range(count):
@@ -64,7 +109,7 @@ class SpringboardTestCase(TestCase):
         workspace.refresh_index()
         return categories
 
-    def create_pages(
+    def mk_pages(
             self, workspace, count=2, timestamp_cb=None, language='eng_GB',
             **kwargs):
         timestamp_cb = (

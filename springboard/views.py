@@ -3,7 +3,6 @@ import os
 from elasticgit import EG
 
 from pyramid.view import view_config
-from pyramid.i18n import get_locale_name
 
 from springboard.utils import parse_repo_name
 
@@ -14,7 +13,7 @@ class SpringboardViews(object):
 
     def __init__(self, request):
         self.request = request
-        self.language = get_locale_name(request)
+        self.language = request.locale_name
         self.settings = request.registry.settings
 
         repo_name = parse_repo_name(self.settings['unicore.content_repo_url'])
