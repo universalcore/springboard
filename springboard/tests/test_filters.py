@@ -1,6 +1,4 @@
 from pyramid import testing
-from pyramid.threadlocal import manager
-from pyramid.registry import global_registry
 
 from libthumbor import CryptoURL
 
