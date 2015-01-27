@@ -19,32 +19,82 @@ class YAMLFile(object):
             return yaml.safe_load(fp)
 
 
-class BootstrapTool(ToolCommand):
+class SpringboardToolCommand(ToolCommand):
 
-    command_name = 'bootstrap'
-    command_help_text = 'Tools for bootstrapping a new content repository.'
     command_arguments = (
-        CommandArgument(
-            '-c', '--config',
-            dest='config',
-            help='The config file to use for bootstrapping.',
-            default='bootstrap.yaml',
-            type=YAMLFile()),
-        CommandArgument(
-            '-v', '--verbose',
-            dest='verbose',
-            help='Verbose output.',
-            default=False,
-            action='store_true'),
         CommandArgument(
             '-d', '--clobber',
             dest='clobber',
             help='Clobber any existing data if it exists.',
             default=False,
             action='store_true'),
+        CommandArgument(
+            '-v', '--verbose',
+            dest='verbose',
+            help='Verbose output.',
+            default=False,
+            action='store_true'),
     )
 
     stdout = sys.stdout
+    verbose = False
+
+    def emit(self, line):
+        if self.verbose:
+            self.stdout.write('%s\n' % (line,))
+
+
+class CloneRepoTool(SpringboardToolCommand):
+
+    command_name = 'clone'
+    command_help_text = 'Tools for cloning repositories.'
+    command_arguments = SpringboardToolCommand.command_arguments + (
+        CommandArgument(
+            'repo_url',
+            metavar='repo_url',
+            default=None,
+            help='The URL of the repository to clone.'),
+        CommandArgument(
+            '-r', '--repodir',
+            dest='repodir',
+            help='Directory to put repositories in.',
+            default='repos'),
+    )
+
+    def run(self, repo_url, verbose, clobber, repodir):
+        return self.clone_repo(repo_url,
+                               repodir=repodir,
+                               clobber=clobber,
+                               verbose=verbose)
+
+    def clone_repo(self, repo_url, repodir='repos',
+                   clobber=False, verbose=False):
+        self.verbose = verbose
+        workdir = os.path.join(repodir, parse_repo_name(repo_url))
+        self.emit('Cloning %s to %s.' % (repo_url, workdir))
+        if os.path.isdir(workdir) and not clobber:
+            self.emit('Destination already exists, skipping.')
+            return workdir, EG.read_repo(workdir)
+        elif os.path.isdir(workdir):
+            self.emit('Clobbering existing repository.')
+            shutil.rmtree(workdir)
+
+        repo = EG.clone_repo(repo_url, workdir)
+        return workdir, repo
+
+
+class BootstrapTool(SpringboardToolCommand):
+
+    command_name = 'bootstrap'
+    command_help_text = 'Tools for bootstrapping a new content repository.'
+    command_arguments = SpringboardToolCommand.command_arguments + (
+        CommandArgument(
+            '-c', '--config',
+            dest='config',
+            help='The config file to use for cloning.',
+            default='bootstrap.yaml',
+            type=YAMLFile()),
+    )
 
     def run(self, config, verbose, clobber):
         self.verbose = verbose
@@ -58,10 +108,6 @@ class BootstrapTool(ToolCommand):
                 if index_created:
                     self.create_mapping(workdir, model_class, mapping)
                 self.sync_data(workdir, model_class)
-
-    def emit(self, line):
-        if self.verbose:
-            self.stdout.write('%s\n' % (line,))
 
     def clone_repo(self, repo_url, clobber=False):
         workdir = os.path.join('repos', parse_repo_name(repo_url))
@@ -113,6 +159,7 @@ def get_parser():  # pragma: no cover
     subparsers = parser.add_subparsers(help='Commands')
 
     add_command(subparsers, BootstrapTool)
+    add_command(subparsers, CloneRepoTool)
 
     return parser
 
