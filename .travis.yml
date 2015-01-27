@@ -5,9 +5,11 @@ services:
   - elasticsearch
 install:
   - pip install --upgrade pip
+  - pip install flake8
   - pip install -r requirements-dev.txt
   - pip install -e .
 script:
-  - py.test springboard
+  - flake8 springboard
+  - py.test springboard --cov springboard
 after_success:
   - coveralls
