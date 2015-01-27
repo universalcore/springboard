@@ -36,7 +36,7 @@ class SpringboardTestCase(TestCase):
                      author_email='kees@example.org'):  # pragma: no cover
         name = name or self.id()
         working_dir = working_dir or self.working_dir
-        index_prefix = index_prefix or name.lower().replace('.', '-')
+        index_prefix = index_prefix or slugify(name)
         auto_destroy = auto_destroy or self.destroy
         workspace = EG.workspace(os.path.join(working_dir, name), es={
             'urls': [url],
