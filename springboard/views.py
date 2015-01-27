@@ -8,6 +8,8 @@ from springboard.utils import parse_repo_name
 
 from unicore.content.models import Category, Page
 
+from slugify import slugify
+
 
 class SpringboardViews(object):
 
@@ -18,7 +20,7 @@ class SpringboardViews(object):
 
         repo_name = parse_repo_name(self.settings['unicore.content_repo_url'])
         repo_path = os.path.join('repos', repo_name)
-        index_prefix = repo_name.lower().replace('.', '-')
+        index_prefix = slugify(repo_name)
         self.workspace = EG.workspace(
             repo_path, index_prefix=index_prefix)
         self.all_categories = self.workspace.S(Category)
