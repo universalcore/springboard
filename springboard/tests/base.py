@@ -8,6 +8,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from webtest import TestApp
+from pyramid import testing
 
 from elasticgit import EG
 from elasticgit.utils import load_class
@@ -32,7 +33,7 @@ class SpringboardTestCase(TestCase):
                      index_prefix=None,
                      auto_destroy=None,
                      author_name='Test Kees',
-                     author_email='kees@example.org'):
+                     author_email='kees@example.org'):  # pragma: no cover
         name = name or self.id()
         working_dir = working_dir or self.working_dir
         index_prefix = index_prefix or name.lower().replace('.', '-')
@@ -56,7 +57,7 @@ class SpringboardTestCase(TestCase):
         return workspace
 
     def mk_app(self, workspace, ini_config={}, settings={}, main=main,
-               extra_environ={}):
+               extra_environ={}):  # pragma: no cover
         ini_defaults = {
             'celery': {
                 'CELERY_ALWAYS_EAGER': True,
@@ -77,12 +78,18 @@ class SpringboardTestCase(TestCase):
         }, **settings_defaults), extra_environ=extra_environ)
         return app
 
-    def mk_tempfile(self):
+    def mk_request(self, params={}, matchdict={}, locale_name='eng_GB'):
+        request = testing.DummyRequest(params)
+        request.locale_name = locale_name
+        request.matchdict = matchdict
+        return request
+
+    def mk_tempfile(self):  # pragma: no cover
         fp, pathname = tempfile.mkstemp(text=True)
         self.addCleanup(os.unlink, pathname)
         return os.fdopen(fp, 'w'), pathname
 
-    def mk_configfile(self, data):
+    def mk_configfile(self, data):  # pragma: no cover
         fp, pathname = self.mk_tempfile()
         with fp:
             cp = ConfigParser()
@@ -96,7 +103,8 @@ class SpringboardTestCase(TestCase):
         return pathname
 
     def mk_categories(
-            self, workspace, count=2, language='eng_GB', **kwargs):
+            self, workspace, count=2, language='eng_GB',
+            **kwargs):   # pragma: no cover
         categories = []
         for i in range(count):
             data = {}
@@ -120,7 +128,7 @@ class SpringboardTestCase(TestCase):
 
     def mk_pages(
             self, workspace, count=2, timestamp_cb=None, language='eng_GB',
-            **kwargs):
+            **kwargs):  # pragma: no cover
         timestamp_cb = (
             timestamp_cb or (lambda i: datetime.utcnow().isoformat()))
         pages = []
@@ -144,7 +152,8 @@ class SpringboardTestCase(TestCase):
         workspace.refresh_index()
         return pages
 
-    def mk_localisation(self, workspace, locale='eng_GB', **kwargs):
+    def mk_localisation(self, workspace, locale='eng_GB',
+                        **kwargs):  # pragma: no cover
         data = {'locale': locale}
         data.update(kwargs)
         localisation = Localisation(data)

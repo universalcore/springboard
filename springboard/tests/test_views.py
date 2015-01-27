@@ -16,12 +16,6 @@ class TestViews(SpringboardTestCase):
     def tearDown(self):
         testing.tearDown()
 
-    def mk_request(self, params={}, matchdict={}, locale_name='eng_GB'):
-        request = testing.DummyRequest(params)
-        request.locale_name = locale_name
-        request.matchdict = matchdict
-        return request
-
     def test_default_context(self):
         views = SpringboardViews(self.mk_request())
         context = views.context()

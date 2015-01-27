@@ -6,7 +6,7 @@ from libthumbor import CryptoURL
 
 from markdown import markdown
 
-from pyramid.threadlocal import get_current_request
+from pyramid.threadlocal import get_current_registry
 
 
 @contextfilter
@@ -17,8 +17,8 @@ def format_date_filter(ctx, date_string, format):
 
 @contextfilter
 def thumbor_filter(ctx, image, width, height=None):
-    request = get_current_request()
-    security_key = request.registry.settings.get('thumbor.security_key')
+    registry = get_current_registry(context=ctx)
+    security_key = registry.settings.get('thumbor.security_key')
     if not all([security_key, image]):
         return ''
 
