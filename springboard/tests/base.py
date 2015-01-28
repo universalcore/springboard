@@ -24,7 +24,7 @@ class SpringboardTestCase(TestCase):
 
     destroy = 'KEEP_REPO' not in os.environ
     bootstrap_file = pkg_resources.resource_filename(
-        'springboard', 'tests/test_bootstrap.yaml')
+        'springboard', 'tests/test_springboard.yaml')
     working_dir = '.test_repos/'
 
     def mk_workspace(self, working_dir=None,

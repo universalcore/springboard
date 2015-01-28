@@ -11,8 +11,6 @@ from elasticgit.utils import load_class, fqcn
 
 from slugify import slugify
 
-from springboard.utils import parse_repo_name
-
 
 class YAMLFile(object):
 
@@ -25,6 +23,13 @@ class SpringboardToolCommand(ToolCommand):
 
     command_arguments = (
         CommandArgument(
+            '-c', '--config',
+            dest='config',
+            help='The configuration file to load',
+            default='springboard.yaml',
+            type=YAMLFile(),
+        ),
+        CommandArgument(
             '-d', '--clobber',
             dest='clobber',
             help='Clobber any existing data if it exists.',
@@ -36,6 +41,11 @@ class SpringboardToolCommand(ToolCommand):
             help='Verbose output.',
             default=False,
             action='store_true'),
+        CommandArgument(
+            '-r', '--repo-dir',
+            dest='repo_dir',
+            help='Directory to put repositories in.',
+            default='repos'),
     )
 
     stdout = sys.stdout
@@ -52,26 +62,23 @@ class CloneRepoTool(SpringboardToolCommand):
     command_help_text = 'Tools for cloning repositories.'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
-            'repo_url',
-            metavar='repo_url',
-            help='The URL of the repository to clone.'),
-        CommandArgument(
-            '-r', '--repo-dir',
-            dest='repo_dir',
-            help='Directory to put repositories in.',
-            default='repos'),
+            'repo_name',
+            metavar='repo_name',
+            help='The name of the repository to clone.'),
     )
 
-    def run(self, verbose, clobber, repo_url, repo_dir):
-        return self.clone_repo(repo_url,
+    def run(self, config, verbose, clobber, repo_dir, repo_name):
+        repo_url = config['repositories'][repo_name]
+        return self.clone_repo(repo_name,
+                               repo_url,
                                repo_dir=repo_dir,
                                clobber=clobber,
                                verbose=verbose)
 
-    def clone_repo(self, repo_url, repo_dir='repos',
-                   clobber=False, verbose=False):
+    def clone_repo(self, repo_name, repo_url,
+                   repo_dir='repos', clobber=False, verbose=False):
         self.verbose = verbose
-        workdir = os.path.join(repo_dir, parse_repo_name(repo_url))
+        workdir = os.path.join(repo_dir, repo_name)
         self.emit('Cloning %s to %s.' % (repo_url, workdir))
         if os.path.isdir(workdir) and not clobber:
             self.emit('Destination already exists, skipping.')
@@ -90,13 +97,14 @@ class CreateIndexTool(SpringboardToolCommand):
     command_help_text = 'Create an Elasticsearch for a repository'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
-            'repo_dir',
-            metavar='repo_dir',
-            help='The repository directory'),
+            'repo_name',
+            metavar='repo_name',
+            help='The repository name'),
     )
 
-    def run(self, verbose, clobber, repo_dir):
-        return self.create_index(repo_dir, verbose=verbose, clobber=clobber)
+    def run(self, config, verbose, clobber, repo_dir, repo_name):
+        return self.create_index(os.path.join(repo_dir, repo_name),
+                                 verbose=verbose, clobber=clobber)
 
     def create_index(self, workdir, verbose=False, clobber=False):
         self.verbose = verbose
@@ -125,23 +133,16 @@ class CreateMappingTool(SpringboardToolCommand):
     command_help_text = 'Upload a mapping for models stored in elastic-git'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
-            '-c', '--config',
-            dest='config',
-            help='The config file to use for cloning.',
-            default='bootstrap.yaml',
-            type=YAMLFile()),
-        CommandArgument(
-            '-r', '--repo-dir',
-            dest='repo_dir',
-            help='Directory to put repositories in.',
-            default='repos'),
+            'repo_name',
+            metavar='repo_name',
+            help='The repository name'),
     )
 
-    def run(self, verbose, clobber, config, repo_dir):
+    def run(self, config, verbose, clobber, repo_dir, repo_name):
         for model_name, mapping in config['models'].items():
             model_class = load_class(model_name)
-            self.create_mapping(repo_dir, model_class, mapping,
-                                verbose=verbose)
+            self.create_mapping(os.path.join(repo_dir, repo_name),
+                                model_class, mapping, verbose=verbose)
 
     def create_mapping(self, repo_dir, model_class, mapping,
                        verbose=False):
@@ -159,21 +160,15 @@ class SyncDataTool(SpringboardToolCommand):
     command_help_text = 'Sync data from a repo with elastic-git'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
-            '-c', '--config',
-            dest='config',
-            help='The config file to use for cloning.',
-            default='bootstrap.yaml',
-            type=YAMLFile()),
-        CommandArgument(
-            'repo_dir',
-            metavar='repo_dir',
-            help='The git repository direction to read data from.'),
+            'repo_name',
+            metavar='repo_name',
+            help='The repository name'),
     )
 
-    def run(self, verbose, clobber, config, repo_dir):
+    def run(self, config, verbose, clobber, repo_dir, repo_name):
         for model_name, mapping in config['models'].items():
             model_class = load_class(model_name)
-            self.sync_data(repo_dir, model_class,
+            self.sync_data(os.path.join(repo_dir, repo_name), model_class,
                            verbose=verbose,
                            clobber=clobber)
 
@@ -193,26 +188,14 @@ class BootstrapTool(CloneRepoTool,
 
     command_name = 'bootstrap'
     command_help_text = 'Tools for bootstrapping a new content repository.'
-    command_arguments = SpringboardToolCommand.command_arguments + (
-        CommandArgument(
-            '-c', '--config',
-            dest='config',
-            help='The config file to use for cloning.',
-            default='bootstrap.yaml',
-            type=YAMLFile()),
-        CommandArgument(
-            '-r', '--repo-dir',
-            dest='repo_dir',
-            help='Directory to put repositories in.',
-            default='repos'),
-    )
 
-    def run(self, verbose, clobber, config, repo_dir):
-        repos = [self.clone_repo(repo_url,
+    def run(self, config, verbose, clobber, repo_dir):
+        repos = [self.clone_repo(repo_name=repo_name,
+                                 repo_url=repo_url,
                                  repo_dir=repo_dir,
                                  clobber=clobber,
                                  verbose=verbose)
-                 for repo_url in config['repositories']]
+                 for repo_name, repo_url in config['repositories'].items()]
         for workdir, _ in repos:
             index_created = self.create_index(workdir,
                                               clobber=clobber,
