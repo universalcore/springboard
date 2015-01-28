@@ -13,11 +13,6 @@ def main(global_config, **settings):
     defaults.update(settings)
 
     config = Configurator(settings=defaults)
-    config.add_static_view('static', 'springboard:static', cache_max_age=3600)
-    config.add_route('home', '/')
-    config.add_route('category', '/category/{uuid}/')
-    config.add_route('page', '/page/{uuid}/')
-    config.add_route('flat_page', '/{slug}/')
-    config.scan(".views")
+    config.include('springboard.config')
 
     return config.make_wsgi_app()
