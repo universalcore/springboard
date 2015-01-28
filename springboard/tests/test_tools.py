@@ -3,7 +3,7 @@ import shutil
 from StringIO import StringIO
 
 from springboard.tests import SpringboardTestCase
-from springboard.tools import (
+from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
     BootstrapTool)
 
