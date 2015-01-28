@@ -94,7 +94,8 @@ class CloneRepoTool(SpringboardToolCommand):
 class CreateIndexTool(SpringboardToolCommand):
 
     command_name = 'create-index'
-    command_help_text = 'Create an Elasticsearch for a repository'
+    command_help_text = (
+        'Create a search index for models stored in elastic-git')
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
             'repo_name',
@@ -139,7 +140,7 @@ class CreateMappingTool(SpringboardToolCommand):
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
-        for model_name, mapping in config['models'].items():
+        for model_name, mapping in config.get('models', {}).items():
             model_class = load_class(model_name)
             self.create_mapping(os.path.join(repo_dir, repo_name),
                                 model_class, mapping, verbose=verbose)
@@ -166,7 +167,7 @@ class SyncDataTool(SpringboardToolCommand):
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
-        for model_name, mapping in config['models'].items():
+        for model_name, mapping in config.get('models', {}).items():
             model_class = load_class(model_name)
             self.sync_data(os.path.join(repo_dir, repo_name), model_class,
                            verbose=verbose,
@@ -188,6 +189,7 @@ class BootstrapTool(CloneRepoTool,
 
     command_name = 'bootstrap'
     command_help_text = 'Tools for bootstrapping a new content repository.'
+    command_arguments = SpringboardToolCommand.command_arguments
 
     def run(self, config, verbose, clobber, repo_dir):
         repos = [self.clone_repo(repo_name=repo_name,
@@ -200,7 +202,7 @@ class BootstrapTool(CloneRepoTool,
             index_created = self.create_index(workdir,
                                               clobber=clobber,
                                               verbose=verbose)
-            for model_name, mapping in config['models'].items():
+            for model_name, mapping in config.get('models', {}).items():
                 model_class = load_class(model_name)
                 if index_created:
                     self.create_mapping(workdir, model_class, mapping)
