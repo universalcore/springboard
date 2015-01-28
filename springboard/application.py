@@ -5,7 +5,7 @@ from pyramid.config import Configurator
 import pkg_resources
 
 
-def main(global_config, **settings):
+def main(global_config, **settings):  # pragma: no cover
 
     cp = ConfigParser()
     cp.readfp(pkg_resources.resource_stream('springboard', 'defaults.ini'))
