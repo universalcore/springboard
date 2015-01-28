@@ -33,5 +33,5 @@ setup(name='springboard',
       tests_require=requires,
       entry_points={
           'paste.app_factory': ['main = springboard.application:main'],
-          'console_scripts': ['springboard = springboard.tools:main'],
+          'console_scripts': ['springboard = springboard.tools.main:main'],
       })
