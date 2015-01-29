@@ -1,6 +1,7 @@
 import pkg_resources
 from cookiecutter.main import cookiecutter
 
+from springboard.utils import parse_repo_name
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
 
@@ -15,9 +16,9 @@ class StartAppTool(SpringboardToolCommand):
             metavar='app_name',
             help='The name of the application to start.'),
         CommandArgument(
-            '--repo-url',
+            '-r', '--repo-url',
             dest='unicore_content_repo_url',
-            default='',
+            required=True,
             help='The content repository to use.'),
         CommandArgument(
             '--security-key',
@@ -52,6 +53,12 @@ class StartAppTool(SpringboardToolCommand):
     )
 
     def run(self, **options):
+        if options['unicore_content_repo_url']:
+            options.update({
+                'unicore_content_repo_name': parse_repo_name(
+                    options['unicore_content_repo_url']),
+            })
+
         cookiecutter(
             pkg_resources.resource_filename(
                 'springboard', 'tools/commands/cookiecutter/startapp'),
