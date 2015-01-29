@@ -22,14 +22,14 @@ bootstrapping sites for Universal Core.
     :alt: Springboard Documentation
 
 Installation
-------------
+============
 
 .. code-block:: bash
 
     pip install springboard
 
 Starting a new site
--------------------
+===================
 
 First make sure you have Elasticsearch_ and Redis_ running and then:
 
@@ -37,7 +37,6 @@ First make sure you have Elasticsearch_ and Redis_ running and then:
 
     $ springboard start-app myapp -r https://github.com/universalcore/unicore-cms-content-ffl-tanzania
     $ cd myapp
-    $ pip install -e .
     $ springboard bootstrap -v
     $ pserve development.ini --reload
 
@@ -47,20 +46,15 @@ First make sure you have Elasticsearch_ and Redis_ running and then:
 Now visit http://0.0.0.0:6543/ in your browser and see the skeleton site
 with the content loaded from the repository.
 
-.. toctree::
-   :maxdepth: 2
+The templates and the static files used the render and style the content
+are in the ``myapp/templates`` and ``myapp/static`` directories.
 
-   tools
+Have fun!
+
+Springboard installs with a few more command line tools that make it
+easy to clone, index, map & sync the data. Have a look at the :ref:`tools`
+documentation
 
 
 .. _Elasticsearch: http://www.elasticsearch.org
 .. _Redis: http://www.redis.io
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

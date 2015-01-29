@@ -1,0 +1,302 @@
+/*  SETTINGS (device specific etc)  */
+
+    html, body { -webkit-text-size-adjust: none; }
+    *, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+    :focus { outline: none; }
+
+
+/*  GLOBALS  */
+
+    html, body { margin: 0; padding: 0; background: #fff; font-size: 16px; font-family: Arial, Helvetica, sans-serif; line-height: 1.4em; color: #888888; }
+    input, select, textarea { font-size: 95%; font-family: Arial, Helvetica, sans-serif; }
+    a { color: #000; text-decoration: none; }
+    .clr { width: 100%; height: 0px; clear: both; display: block; }
+    div#mti_wfs_colophon { display: none!important; }
+    .white { background: #fff!important; }
+    .orange { color: #fa9e1d; }
+    .orange.up { text-transform: uppercase; }
+
+
+/*  HEADER  */
+
+    #header { width: 100%; background: #000; position: relative; z-index: 100000; }
+        #header .logo a { padding: 0 0 2px 0; margin: 7px 18px 3px 18px; display: block;}
+        #header .logo img { width: 140px; }
+        #header .drop { display: none; }
+        #header .lang {width: 100%; line-height: 20px; padding: 5px 18px; display: block; background: #fff; color: #000; font-size: 12px; }
+            #header .lang div{text-align: right;}
+            #header .lang a {color: #333;}
+
+
+/*  SUBMENU  */
+
+    #submenu { background: #fff; padding: 10px 18px; margin: 3px 0 0 0; color: #000; }
+    #submenu a { font-weight: bold; color: #000; letter-spacing: 0.02em; }
+
+
+/*  BANNER  */
+
+    #banner { padding: 0; margin: 0 0 3px 0; position: relative; z-index: 1; }
+        #banner img { width: 100%; display: block; }
+
+
+/*  CONTENT  */
+
+    #content { background: #fff; position: relative; }
+
+        /* Frequently Used */
+        .h1 { margin: 3px 0 0 0; padding: 8px 18px; font-size: 16px; font-weight: bold; text-transform: uppercase; line-height: 22px; color: #fff; }
+        .h1 a { color: #fff; font-weight: bold; }
+        .comment,
+        .listing { min-height: 45px; border-bottom: 1px solid #d4d4d4; }
+        .listing:last-of-type { border: 0!important; }
+        .listing .h2,
+        .poll .fields .h2,
+        .detail .h2,
+        .flat .h2,
+        .comment .h3 { font-size: 16px; line-height: 16px; }
+        .pagination { background: #eeeeee; padding: 8px 18px; }
+        .auth form .btns input,
+        .auth form .btns a,
+        .poll .btns input,
+        .listing .more a,
+        .pagination a,
+        .addcomment form .btns input,
+        .challenge .btns input,
+        .challenge .btns a { border: 0; }
+        .pagination a.right { display: none; }
+
+        /* Articles */
+        .articles { padding: 0; margin: 0 0 3px 0; }
+        .articles .h1 { background: #000; }
+            .articles .listing { padding: 13px 18px; }
+                .articles .listing img { width: 45px; float: left; margin: 0 18px 0 0; display: block; }
+                .articles .listing .h2 { margin: 0; padding: 0; color: #000;  }
+                .articles .listing .h2 a { color: #000; }
+                .articles .listing p { margin: 0; padding: 2px 0 0 0; color: #888888; }
+                .articles .pagination a { font-weight: bold; color: #000; }
+                .articles .no-pic .h2, .articles .no-pic p { margin-left: 0; }
+            .articles .detail { padding: 13px 18px; }
+                .articles .detail pre {
+                    word-break: break-all; /* webkit */
+                    word-wrap: break-word;
+                    white-space: pre;
+                    white-space: -moz-pre-wrap; /* fennec */
+                    white-space: pre-wrap;
+                    white-space: pre\9; /* IE7+ */
+                }
+                .articles .detail img { width: 100%; margin: 14px 0; display: block; }
+                .articles .detail .date { font-size: 13px; text-transform: uppercase; color: #bbb; }
+
+        /* Latest */
+        .latest{}
+            .latest .h1{ background: #000; }
+            .latest .listing .h2 a { color: #000; }
+
+        /* Head (used on Articles, Hope City, Stories, etc) */
+
+        .head {}
+            .head .h2 { margin: 0; font-size: 22px; line-height: 28px; font-weight: bold; }
+            .head .img img { width: 45px; float: left; margin: 0 17px 0 0; display: block; }
+            .head .meta { margin: 3px 0 0 0; }
+            .head .no-pic {margin-left: 0}
+
+        /* Challenge */
+        .challenge { margin: 0 0 3px 0; }
+        .challenge .h1 { background: #e31f26; }
+            .challenge .listing { padding: 25px; background: #ea178b; border: 0; }
+                .challenge .listing img { width: 50px; float: left; display: block; }
+                .challenge .listing .h2 { margin: 0; padding: 0; color: #fff;  }
+                .challenge .listing .h2 a { color: #fff; }
+                .challenge .listing .h2 a span { color: #000; }
+                .challenge .btns { padding: 7px 12px 12px 20px; }
+                .challenge .btns input { color: #b00e6f; }
+                .challenge .btns a { float: right; color: #b00e6f; }
+
+        /* Hope City */
+        .hope-city { margin: 0 0 3px 0; }
+        .hope-city .h1 { background: #fad527; }
+        .hope-city .h1 span { padding: 7px 20px; float: right; color: #000; }
+            .hope-city .listing { background: #fdf2be; padding: 12px 12px 0 20px; border-bottom: 1px solid #d4d4d4; }
+                .hope-city .listing img { width: 70px; float: right; display: block; }
+                .hope-city .listing .h2 { margin: 0; padding: 0; color: #000;  }
+                .hope-city .listing .h2 a { color: #000; }
+                .hope-city .listing .h2 span { color: #fa9e1d; }
+                .hope-city .pagination { background: #fdf2be; }
+                .hope-city .pagination a { color: #dc850c; }
+            .hope-city .detail { padding: 20px 20px 10px 20px; }
+
+        /* Stories */
+        .stories { background: #fff; margin: 0 0 3px 0; }
+        .stories .h1 { background: #c4d131; }
+        .stories .h1 a i { display: none; }
+            .stories .listing { padding: 12px 12px 12px 20px; }
+                .stories .listing img { width: 70px; float: right; display: block; }
+                .stories .listing .h2 { margin: 3px 0 0 0; padding: 0; color: #34b2b2;  }
+                .stories .listing .h2 a { color: #34b2b2; }
+                .stories .listing .h2 a:before { padding: 5px 1px 0 0; content: "\201C"; font-size: 24px; color: #c4d131; }
+                .stories .listing .h2 a:after { padding: 5px 0 0 1px; content: "\201D"; font-size: 24px; color: #c4d131; }
+                .stories .listing p { margin: 3px 0 0 0; font-size: 12px; text-transform: uppercase; line-height: 20px; color: #363636;  }
+                .stories .pagination a {  color: #34b2b2; }
+                .stories .pagination a.own { color: #c4d131; }
+            .stories .detail { padding: 20px 20px 10px 20px; }
+
+        /* Declaration */
+        .declaration { margin: 0 0 3px 0; }
+        .declaration .h1 { background: #39c0c0; }
+            .declaration .listing { padding: 13px 16px; }
+                .declaration .listing img { width: 50px; float: left; margin: 0 18px 0 0; display: block; }
+                .declaration .listing .h2 { margin: 0; padding: 0; color: #39c0c0;  }
+                .declaration .listing .h2 a { color: #39c0c0; padding: 0;}
+                .declaration .listing p { margin: 0; padding: 2px 0 0 0; color: #888888; }
+                .declaration .pagination a { font-weight: bold; color: #39c0c0; }
+            .declaration .detail { padding: 10px; }
+
+        /* What */
+        .what { margin: 0 0 3px 0; }
+        .what .h1 { background: #c4d131; }
+        .what .h1 a { color: #000; }
+            .what .listing { padding: 13px 18px; }
+                .what .listing img { width: 50px; float: left; margin: 0 18px 0 0; display: block; }
+                .what .listing .h2 { margin: 0; padding: 0; color: #c4d131;  }
+                .what .listing .h2 a { color: #c4d131; padding: 0;}
+                .what .listing p { margin: 0; padding: 2px 0 0 0; color: #888888; }
+                .what .pagination { color: #888888; }
+                .what .pagination a { font-weight: bold; color: #20b7ac; }
+            .what .detail { padding: 10px; }
+
+        /* Poll */
+        .poll { margin: 0 0 3px 0; }
+        .poll form { background: #fcdcee; }
+        .poll .h1 { background: #b00e6f; }
+            .fields { padding: 20px 20px 15px 20px; border-bottom: 1px solid #edb3d5; }
+                .fields .h2 { margin: 0; padding: 0 0 10px 0; color: #000;  }
+                .fields .h2 span { display: block; color: #c71663; }
+                .fields .field label { padding: 5px 0; display: block; font-family: 'Tw Cen W01 Medium', Arial, Helvetica, sans-serif; font-size: 12px; text-transform: uppercase; line-height: 18px; color: #000; }
+            .results { margin: 5px 0 0 0; }
+                .results .h3 { font-size: 13px; text-transform: uppercase; }
+                .results .answer { margin: 5px 0 15px 0; padding: 4px 8px 2px 8px; background: #b00e6f; display: inline-block; font-size: 12px; color: #fff; }
+            .poll .listing { padding: 12px; }
+                .poll .listing img { width: 50px; float: left; margin: 0 10px 0 0; display: block; }
+                .poll .listing .h2 { margin: 0; padding: 0; color: #eb178e;  }
+                .poll .listing .h2 a { color: #eb178e; }
+                .poll .listing p { margin: 0; font-size: 12px; text-transform: uppercase; line-height: 20px; color: #363636; }
+            .poll .btns,
+            .poll .pagination { padding: 7px 12px 12px 20px; }
+            .poll .btns input,
+            .poll .pagination a { color: #b00e6f; }
+
+        /* Gallery */
+        .gallery { margin: 0 0 3px 0; }
+        .gallery .h1 { background: #34b2b2; }
+        .gallery .h1 a span { color: #34b2b2; }
+            .gallery .group { padding: 15px 22px; text-align: center; position: relative; border-bottom: 1px solid #efcfe2; }
+                .gallery .group .pic { width: 80%; margin: 0 10%; font-size: 12px; color: #000; text-transform: uppercase; line-height: 23px;  }
+                .gallery .group .pic img { width: 100%; display: block; padding: 0 0 10px 0; }
+                .gallery .group .prev { width: 19px; height: 20px; margin: -22px 0 0 15px; background: url('../img/gallery-prev.png') no-repeat; position: absolute; top: 50%; left: 0; }
+                .gallery .group .next { width: 19px; height: 20px; margin: -22px 15px 0 0; background: url('../img/gallery-next.png') no-repeat; position: absolute; top: 50%; right: 0; }
+            .gallery .listing { padding: 12px; background: url('../img/arrow-latest.png') 97% center no-repeat; background-size: 20px 20px; border-bottom: 1px solid #d4d4d4; }
+                .gallery .listing img { width: 45px; float: left; display: block; }
+                .gallery .listing .h2 { margin: 0 0 0 57px; padding: 4px 0 0 0; color: #34b2b2;  }
+                .gallery .listing .h2 a { color: #34b2b2; }
+                .gallery .listing p { margin: 0 0 0 57px; font-size: 12px; text-transform: uppercase; line-height: 20px; color: #363636;  }
+            .gallery .pagination a { background: url('../img/arrow-gallery.png') left center no-repeat; color: #269999; }
+
+        /* New Members */
+        .members {}
+        .members .h1 { background: #fad527; }
+        .members .h1 a { background: #fa9e1d url('../img/members-bg.png') right bottom no-repeat; }
+        .members .h1 a span { color: #000; }
+            .members .girls { height: 70px; margin: 10px 0; background: #fad527; overflow: scroll; position: relative; }
+                .members .girls img { width: 70px; display: block; margin: 0 10px 0 0; float: left; }
+                .members .girls a:last-child img { margin: 0; }
+                .members .girls .slide { width: 790px; height: 70px; position: absolute; left: 0; }
+            .members .listing { padding: 20px; border: 0; }
+                .members .listing img { width: 45px; float: left; display: block; }
+                .members .listing .h2 { margin: 0 0 0 57px; padding: 0; color: #000; }
+                .members .listing .h2 a { color: #34b2b2; }
+                .members .listing p { margin: 0 0 0 57px; font-size: 12px; text-transform: uppercase; line-height: 20px; color: #363636;  }
+            .members .detail { padding: 20px; }
+
+        /* Auth Forms (i.e Register / Login / Forgot Password etc) */
+        .auth { background: #fcdcee; margin: 0 0 3px 0; }
+        .auth .h1 { background: #b00e6f; }
+            .auth form { padding: 20px; }
+            .auth form .field { padding: 0 0 10px 0; }
+            .auth form label { margin: 0; font-size: 12px; text-transform: uppercase; line-height: 18px; color: #000; display: block; }
+            .auth form .helptext { font-size: 12px; }
+            .auth form .field input[type="text"],
+            .auth form .field input[type="password"] { width: 100%; padding: 5px; border: 1px solid #b00e6f; font-size: 12px; text-transform: uppercase; line-height: 18px; color: #e31f26; }
+            .auth form .field select { width: 32%; padding: 5px; border: 1px solid #b00e6f; font-size: 12px; text-transform: uppercase; line-height: 18px; color: #e31f26; }
+            .auth form .btns input,
+            .auth form .btns a { background: url('../img/arrow-poll.png') left center no-repeat; color: #b00e6f; }
+            .auth form .btns a { float: right; margin: 0; }
+
+        /* Comments */
+        .comment { min-height: 85px; padding: 13px 18px; }
+        .comment:last-of-type { border: 0; }
+            .comment img { width: 45px; float: left; display: block; }
+            .comment .h3 { margin: 0 0 0 57px; font-size: 14px; }
+            .comment .h3 span { color: #b00e6f; }
+            .comment .text { margin: 2px 0 0 57px; }
+            .comment .text p:first-child { margin-top: 0; }
+            .comment .text p:last-child { margin-bottom: 0; }
+        .addcomment {}
+            .addcomment form { padding: 10px; }
+            .addcomment form .field textarea { width: 100%; height: 100px; padding: 5px; border: 1px solid #b00e6f; font-size: 14px; line-height: 18px; color: #e31f26; }
+            .addcomment form .btns input { background: transparent; padding: 0; margin: 5px 0 0 0; font-weight: bold; color: #c71663; }
+
+        /* Flat pages (i.e About, Terms, General Flatpages) */
+        .flat {}
+            .flat .h1 { background: #c4d131; }
+            .flat .detail { padding: 20px; }
+            .flat .pagination { border-top: 1px solid #d4d4d4; }
+            .flat .pagination a { background: url('../img/arrow-stories.png') left center no-repeat; color: #34b2b2; }
+
+        .fb { width: 25px; height: 25px; margin: 0 5px 0 0; background: url('../img/fb.png') no-repeat; display: inline-block; }
+        .tw { width: 25px; height: 25px; margin: 0 5px 0 0; background: url('../img/tw.png') no-repeat; display: inline-block; }
+
+        /* Section Title colours */
+        .girl-heroes .head .h2 { color: #ea178b; }
+
+/*  FOOTER  */
+
+    #footer { padding: 15px 12px; background: #d9d9d9; font-size: 12px; text-transform: uppercase; position: relative; }
+        #footer a.contact { color: #000; text-decoration: underline; }
+        #footer a.terms { float: right; color: #6c6c6c; text-decoration: underline; }
+
+
+/*  BASE  */
+
+    #base { height: 120px; }
+        #base img { width: 100%; display: block; }
+
+
+/*  RETINA (because it's nice when you work on something that looks good)  */
+
+    @media
+        only screen and (-webkit-min-device-pixel-ratio: 2),
+        only screen and (   min--moz-device-pixel-ratio: 2),
+        only screen and (     -o-min-device-pixel-ratio: 2/1),
+        only screen and (        min-device-pixel-ratio: 2),
+        only screen and (                min-resolution: 192dpi),
+        only screen and (                min-resolution: 2dppx)
+    {
+
+        /* header */
+        /*#header a.logo { background: url('../img/logo_x2.png') no-repeat; background-size: 197px 46px; }*/
+
+    }
+
+
+/* PREVIEW: Mobile "preview" for large screens */
+
+    @media screen and (min-width: 1024px) {
+        html {
+            background-color: #333;
+        }
+        body {
+            max-width: 320px;
+            margin: 0 auto;
+        }
+    }

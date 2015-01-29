@@ -14,5 +14,10 @@ def main(global_config, **settings):
 
     config = Configurator(settings=defaults)
     config.include('springboard.config')
+    config.override_asset(
+        to_override='springboard:templates/',
+        override_with='{{cookiecutter.app_name}}:templates/')
+    config.add_static_view(
+        'static', '{{cookiecutter.app_name}}:static', cache_max_age=3600)
 
     return config.make_wsgi_app()
