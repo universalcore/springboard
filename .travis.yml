@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.7"
+services:
+  - elasticsearch
+install:
+  - pip install --upgrade pip
+  - pip install flake8
+  - pip install -r requirements-dev.txt
+  - pip install -e .
+script:
+  - flake8 springboard
+  - py.test springboard --cov springboard
+after_success:
+  - coveralls

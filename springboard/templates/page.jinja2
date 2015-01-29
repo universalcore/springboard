@@ -1,0 +1,45 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<div>
+    <div class="articles">
+
+        <div class="h1">
+            <a href="{{'category'|route_url(uuid=category.uuid)}}">{{category.title}}</a>
+        </div>
+
+        <div class="detail">
+            {% if page.image_host and page.image %}
+            <div class="head">
+                <div class="img">
+                    <a href="{{'page'|route_url(uuid=page.uuid)}}">
+                        <img alt='{{page.title}}' src="{{page.image_host}}{{page.image|thumbor(45, 45)}}"/>
+                    </a>
+                </div>
+            {% else %}
+            <div class="head no-pic">
+            {% endif %}
+                <div class="meta">{{page.created_at|format_date('%d %B %Y')}}</div>
+                <div class="h2">{{page.title}}</div>
+                <div class="meta">{{page.description|markdown}}</div>
+            </div>
+            <div class="clr"></div>
+            <p>{{page.content|markdown}}</p>
+            {% if page.linked_pages %}
+                {% set linked_pages = all_pages.filter(uuid=page.linked_pages) %}
+                {% if linked_pages %}
+                <div class="items">
+                    {% for linked_page in linked_pages %}
+                    <div class="item">
+                        <a href="{{'page'|route_url(uuid=linked_page.uuid)}}">
+                            &raquo; {{linked_page.title}}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

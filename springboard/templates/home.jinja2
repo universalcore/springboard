@@ -1,0 +1,55 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<div>
+    <div>
+        <div>
+            <div id="banner">
+                <a href="/declaration/">
+                    {% if localisation and localisation.image_host and localisation.image %}
+                        <img alt="Welcome to the Skeleton" src="{{localisation.image_host}}{{localisation|thumbor(320)}}"/>
+                    {% else %}
+                        <img alt='Welcome to the Skeleton' src="{{'springboard:static/img/000000.png'|static_url }}" />
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        {% set featured_pages = all_pages.filter(language=language, featured=True) %}
+        {% if featured_pages %}
+        <div class="articles latest">
+            <div class="h1">{{gettext('Latest')}}</div>
+            {% for page in featured_pages %}
+                <div class="listing no-pic">
+                    <div class="h2"><a href="{{'page'|route_url(uuid=page.uuid)}}">{{page.title}}</a></div>
+                    <p>{{page.description}}</p>
+                    <div class="clr"></div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for category in all_categories.filter(language=language) %}
+            {% set category_pages = all_pages.filter(primary_category=category.uuid) %}
+            {% if category_pages %}
+            <div class="articles">
+                <div class="h1">
+                    <a href="{{'category'|route_url(uuid=category.uuid)}}/">{{category.title}}</a>
+                </div>
+                {% for page in category_pages %}
+                    <div class="listing no-pic">
+                        <div class="h2"><a href="{{'page'|route_url(uuid=page.uuid)}}">{{page.title}}</a></div>
+                        <p>{{page.description}}</p>
+                        <div class="clr"></div>
+                    </div>
+                {% endfor %}
+                <div class="clr"></div>
+                <div class="pagination">
+                    <a href="{{'category'|route_url(uuid=category.uuid)}}"><span>{{gettext('More')}}</span> {{category.title}}</a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

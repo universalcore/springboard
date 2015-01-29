@@ -1,0 +1,46 @@
+# List of models to be loaded and their mappings, if any.
+models:
+  unicore.content.models.Category:
+    properties:
+      source:
+        index: not_analyzed
+        type: string
+      slug:
+        index: not_analyzed
+        type: string
+      id:
+        index: not_analyzed
+        type: string
+      language:
+        index: not_analyzed
+        type: string
+      uuid:
+        index: not_analyzed
+        type: string
+
+  unicore.content.models.Page:
+    properties:
+      uuid:
+        index: not_analyzed
+        type: string
+      language:
+        index: not_analyzed
+        type: string
+      slug:
+        index: not_analyzed
+        type: string
+      source:
+        index: not_analyzed
+        type: string
+      id:
+        index: not_analyzed
+        type: string
+      primary_category:
+        index: not_analyzed
+        type: string
+
+  unicore.content.models.Localisation:
+    properties:
+      locale:
+        index: not_analyzed
+        type: string
