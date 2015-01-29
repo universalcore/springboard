@@ -2,9 +2,11 @@ elastic-git
 unicore.content
 pyramid
 pyramid_jinja2
+pyramid_celery
 pyyaml
 waitress
 python-dateutil
 libthumbor
 Markdown
 python-slugify
+cookiecutter
