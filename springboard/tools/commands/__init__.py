@@ -3,6 +3,7 @@ from springboard.tools.commands.index import CreateIndexTool
 from springboard.tools.commands.mapping import CreateMappingTool
 from springboard.tools.commands.sync import SyncDataTool
 from springboard.tools.commands.bootstrap import BootstrapTool
+from springboard.tools.commands.startapp import StartAppTool
 
 __all__ = [
     'CloneRepoTool',
@@ -10,4 +11,5 @@ __all__ = [
     'CreateMappingTool',
     'SyncDataTool',
     'BootstrapTool',
+    'StartAppTool',
 ]
