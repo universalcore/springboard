@@ -19,7 +19,8 @@ class SpringboardViews(object):
         self.settings = request.registry.settings
 
         repo_name = parse_repo_name(self.settings['unicore.content_repo_url'])
-        repo_path = os.path.join('repos', repo_name)
+        repo_path = os.path.join(
+            self.settings.get('unicore.repos_dir', 'repos'), repo_name)
         index_prefix = slugify(repo_name)
         self.workspace = EG.workspace(
             repo_path, index_prefix=index_prefix)
