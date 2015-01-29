@@ -50,6 +50,8 @@ with the content loaded from the repository.
 .. toctree::
    :maxdepth: 2
 
+   tools
+
 
 .. _Elasticsearch: http://www.elasticsearch.org
 .. _Redis: http://www.redis.io

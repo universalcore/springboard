@@ -12,8 +12,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
-import os
 import sphinx_rtd_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -31,8 +29,10 @@ import sphinx_rtd_theme
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
+    'sphinx.ext.doctest',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
+    'sphinxarg.ext',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
