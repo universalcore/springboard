@@ -21,6 +21,8 @@ bootstrapping sites for Universal Core.
     :target: https://springboard.readthedocs.org
     :alt: Springboard Documentation
 
+.. image:: springboard.gif
+
 Installation
 ============
 
