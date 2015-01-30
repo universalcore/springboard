@@ -9,6 +9,8 @@ Springboard
     :target: https://coveralls.io/r/smn/springboard?branch=develop
     :alt: Code Coverage
 
+.. image:: docs/springboard.gif
+
 Make sure elasticsearch_ is running, then::
 
     $ git clone https://github.com/smn/springboard.git

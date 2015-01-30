@@ -30,5 +30,7 @@ class BootstrapTool(CloneRepoTool,
             for model_name, mapping in config.get('models', {}).items():
                 model_class = load_class(model_name)
                 if index_created:
-                    self.create_mapping(workdir, model_class, mapping)
-                self.sync_data(workdir, model_class)
+                    self.create_mapping(workdir, model_class, mapping,
+                                        verbose=verbose)
+                self.sync_data(workdir, model_class,
+                               verbose=verbose, clobber=clobber)
