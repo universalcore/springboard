@@ -33,13 +33,12 @@ Installation
 Starting a new site
 ===================
 
-First make sure you have Elasticsearch_ and Redis_ running and then:
+First make sure you have Elasticsearch_ installed and running, then:
 
 .. code-block:: bash
 
     $ springboard startapp myapp -r https://github.com/universalcore/unicore-cms-content-ffl-tanzania
     $ cd myapp
-    $ springboard bootstrap -v
     $ pserve development.ini --reload
 
     Starting server in PID 70411.
