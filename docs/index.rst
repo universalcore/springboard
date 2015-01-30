@@ -35,7 +35,7 @@ First make sure you have Elasticsearch_ and Redis_ running and then:
 
 .. code-block:: bash
 
-    $ springboard start-app myapp -r https://github.com/universalcore/unicore-cms-content-ffl-tanzania
+    $ springboard startapp myapp -r https://github.com/universalcore/unicore-cms-content-ffl-tanzania
     $ cd myapp
     $ springboard bootstrap -v
     $ pserve development.ini --reload
