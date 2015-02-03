@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pyramid import testing
 
 from libthumbor import CryptoURL
@@ -17,7 +19,7 @@ class TestFilters(SpringboardTestCase):
             format_date_filter({}, '2012-12-31', '%d-%m-%y'),
             '31-12-12')
 
-    def test_format_date_filter_string(self):
+    def test_format_date_filter_string_date(self):
         self.assertEqual(
             format_date_filter({}, datetime(2012, 12, 31), '%d-%m-%y'),
             '31-12-12')
