@@ -5,3 +5,4 @@ def includeme(config):
     config.add_route('page', '/page/{uuid}/')
     config.add_route('flat_page', '/{slug}/')
     config.scan(".views")
+    config.scan(".events")
