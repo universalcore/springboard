@@ -12,9 +12,14 @@ class TestFilters(SpringboardTestCase):
     def setUp(self):
         self.workspace = self.mk_workspace()
 
-    def test_format_date_filter(self):
+    def test_format_date_filter_string(self):
         self.assertEqual(
             format_date_filter({}, '2012-12-31', '%d-%m-%y'),
+            '31-12-12')
+
+    def test_format_date_filter_string(self):
+        self.assertEqual(
+            format_date_filter({}, datetime(2012, 12, 31), '%d-%m-%y'),
             '31-12-12')
 
     def test_thumbor_filter(self):
@@ -42,3 +47,7 @@ class TestFilters(SpringboardTestCase):
         self.assertEqual(
             markdown_filter({}, '*foo*'),
             '<p><em>foo</em></p>')
+
+    def test_markdown_filter_none(self):
+        self.assertEqual(markdown_filter({}, None), None)
+        self.assertEqual(markdown_filter({}, ''), '')
