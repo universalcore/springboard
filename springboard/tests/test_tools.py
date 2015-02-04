@@ -10,6 +10,7 @@ from springboard.utils import parse_repo_name
 from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
     BootstrapTool, ImportContentTool)
+from springboard.tools.commands.base import YAMLFile
 
 
 class SpringboardToolTestCase(SpringboardTestCase):
@@ -24,6 +25,19 @@ class SpringboardToolTestCase(SpringboardTestCase):
                 repo_name: self.workspace.working_dir,
             }
         }
+
+
+class TestYAMLHelper(SpringboardToolTestCase):
+
+    def test_yaml_file(self):
+        fp, file_name = self.mk_tempfile()
+        fp.write('foo: bar\n')
+        fp.close()
+
+        argparse_type = YAMLFile()
+        self.assertEqual(
+            argparse_type(file_name),
+            (file_name, {'foo': 'bar'}))
 
 
 class TestCloneRepoTool(SpringboardToolTestCase):
