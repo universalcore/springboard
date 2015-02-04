@@ -32,7 +32,8 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         tool = CloneRepoTool()
         tool.stdout = StringIO()
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=False,
             repo_dir='%s/test_clone_repo' % (self.working_dir,),
@@ -42,7 +43,8 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         self.assertTrue(output.endswith('test_clone_repo.\n'))
 
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=False,
             repo_dir='%s/test_clone_repo' % (self.working_dir,),
@@ -51,7 +53,8 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         self.assertTrue(output.endswith('already exists, skipping.\n'))
 
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=True,
             repo_dir='%s/test_clone_repo' % (self.working_dir,),
@@ -70,7 +73,8 @@ class TestCreateIndex(SpringboardToolTestCase):
         tool = CreateIndexTool()
         tool.stdout = StringIO()
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=False,
             repo_dir=self.workspace.working_dir,
@@ -79,7 +83,8 @@ class TestCreateIndex(SpringboardToolTestCase):
         self.assertTrue(output.endswith('Index already exists, skipping.\n'))
 
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=True,
             repo_dir=self.workspace.working_dir,
