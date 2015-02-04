@@ -1,11 +1,15 @@
 import os
 import shutil
+from ConfigParser import ConfigParser
 from StringIO import StringIO
 
+import yaml
+
 from springboard.tests import SpringboardTestCase
+from springboard.utils import parse_repo_name
 from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
-    BootstrapTool)
+    BootstrapTool, ImportContentTool)
 
 
 class SpringboardToolTestCase(SpringboardTestCase):
@@ -194,3 +198,55 @@ class TestBootstrapTool(SpringboardToolTestCase):
         self.assertEqual(lines[1], 'Destination already exists, skipping.')
         self.assertEqual(lines[2], 'Creating index for master.')
         self.assertEqual(lines[3], 'Index already exists, skipping.')
+
+
+class TestImportContentTool(SpringboardToolTestCase):
+
+    def setUp(self):
+        self.workspace = self.mk_workspace()
+
+    def test_import(self):
+        tool = ImportContentTool()
+        tool.stdout = StringIO()
+        config = self.mk_workspace_config(self.workspace)
+        config['repositories'] = {}
+        config['models'] = {
+            'elasticgit.tests.base.TestPerson': {
+                'properties': {
+                    'name': {
+                        'index': 'not_analyzed',
+                        'type': 'string',
+                    }
+                }
+            }
+        }
+
+        ini_config = self.mk_configfile({
+            'app:main': {
+                'unicore.content_repo_url': '',
+            }
+        })
+
+        _, yaml_config = self.mk_tempfile()
+        tool.run(config=(yaml_config, config),
+                 verbose=True,
+                 clobber=False,
+                 repo_dir=self.working_dir,
+                 repo_url=self.workspace.working_dir,
+                 ini_config=ini_config,
+                 ini_section='app:main',
+                 update_config=True,
+                 repo_name=None)
+
+        cp = ConfigParser()
+        cp.read(ini_config)
+        self.assertEqual(
+            cp.get('app:main', 'unicore.content_repo_url'),
+            self.workspace.working_dir)
+
+        with open(yaml_config, 'r') as fp:
+            data = yaml.safe_load(fp)
+            repo_name = parse_repo_name(self.workspace.working_dir)
+            self.assertEqual(data['repositories'], {
+                repo_name: self.workspace.working_dir
+            })
