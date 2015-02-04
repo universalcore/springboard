@@ -1,6 +1,7 @@
 elastic-git>=0.3.3
 unicore.content
 unicore.google
+unicore.distribute
 pyramid
 pyramid_jinja2
 pyramid_celery>=2.0.0rc4

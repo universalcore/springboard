@@ -7,6 +7,7 @@ from pyramid.view import view_config
 from springboard.utils import parse_repo_name
 
 from unicore.content.models import Category, Page
+from unicore.distribute.tasks import fastforward
 
 from slugify import slugify
 
@@ -64,3 +65,9 @@ class SpringboardViews(object):
         slug = self.request.matchdict['slug']
         [page] = self.all_pages.filter(language=self.language, slug=slug)
         return self.context(page=page)
+
+    @view_config(route_name='api_notify', renderer='json')
+    def api_notify(self):
+        fastforward.delay(self.workspace.working_dir,
+                          self.workspace.index_prefix)
+        return {}

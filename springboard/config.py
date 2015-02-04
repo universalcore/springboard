@@ -4,5 +4,6 @@ def includeme(config):
     config.add_route('category', '/category/{uuid}/')
     config.add_route('page', '/page/{uuid}/')
     config.add_route('flat_page', '/{slug}/')
+    config.add_route('api_notify', '/api/notify/', request_method='POST')
     config.scan(".views")
     config.scan(".events")

@@ -3,6 +3,8 @@ from springboard.views import SpringboardViews
 
 from pyramid import testing
 
+import mock
+
 
 class TestViews(SpringboardTestCase):
 
@@ -55,3 +57,16 @@ class TestViews(SpringboardTestCase):
             self.mk_request(matchdict={'slug': page.slug}))
         context = views.flat_page()
         self.assertEqual(context['page'].uuid, page.uuid)
+
+    @mock.patch('unicore.distribute.tasks.fastforward.delay')
+    def test_api_notify(self, mock_delay):
+        request = self.mk_request()
+        request.method = 'POST'
+
+        views = SpringboardViews(request)
+        response = views.api_notify()
+        mock_delay.assert_called_once()
+        (working_dir, index_prefix), _ = mock_delay.call_args_list[0]
+        self.assertEqual(response, {})
+        self.assertEqual(working_dir, self.workspace.working_dir)
+        self.assertEqual(index_prefix, self.workspace.index_prefix)
