@@ -1,11 +1,16 @@
 import os
 import shutil
+from ConfigParser import ConfigParser
 from StringIO import StringIO
 
+import yaml
+
 from springboard.tests import SpringboardTestCase
+from springboard.utils import parse_repo_name
 from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
-    BootstrapTool)
+    BootstrapTool, ImportContentTool)
+from springboard.tools.commands.base import YAMLFile
 
 
 class SpringboardToolTestCase(SpringboardTestCase):
@@ -22,6 +27,19 @@ class SpringboardToolTestCase(SpringboardTestCase):
         }
 
 
+class TestYAMLHelper(SpringboardToolTestCase):
+
+    def test_yaml_file(self):
+        fp, file_name = self.mk_tempfile()
+        fp.write('foo: bar\n')
+        fp.close()
+
+        argparse_type = YAMLFile()
+        self.assertEqual(
+            argparse_type(file_name),
+            (file_name, {'foo': 'bar'}))
+
+
 class TestCloneRepoTool(SpringboardToolTestCase):
 
     def setUp(self):
@@ -32,7 +50,8 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         tool = CloneRepoTool()
         tool.stdout = StringIO()
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=False,
             repo_dir='%s/test_clone_repo' % (self.working_dir,),
@@ -42,7 +61,8 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         self.assertTrue(output.endswith('test_clone_repo.\n'))
 
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=False,
             repo_dir='%s/test_clone_repo' % (self.working_dir,),
@@ -51,7 +71,8 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         self.assertTrue(output.endswith('already exists, skipping.\n'))
 
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=True,
             repo_dir='%s/test_clone_repo' % (self.working_dir,),
@@ -70,7 +91,8 @@ class TestCreateIndex(SpringboardToolTestCase):
         tool = CreateIndexTool()
         tool.stdout = StringIO()
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=False,
             repo_dir=self.workspace.working_dir,
@@ -79,7 +101,8 @@ class TestCreateIndex(SpringboardToolTestCase):
         self.assertTrue(output.endswith('Index already exists, skipping.\n'))
 
         tool.run(
-            config=self.mk_workspace_config(self.workspace),
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
             verbose=True,
             clobber=True,
             repo_dir=self.workspace.working_dir,
@@ -111,7 +134,7 @@ class TestCreateMapping(SpringboardToolTestCase):
             }
         }
 
-        tool.run(config=config,
+        tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
                  repo_dir=self.workspace.working_dir,
@@ -144,7 +167,7 @@ class TestSyncData(SpringboardToolTestCase):
             }
         }
 
-        tool.run(config=config,
+        tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
                  repo_dir=self.workspace.working_dir,
@@ -176,7 +199,7 @@ class TestBootstrapTool(SpringboardToolTestCase):
             }
         }
 
-        tool.run(config=config,
+        tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
                  repo_dir=self.working_dir)
@@ -189,3 +212,55 @@ class TestBootstrapTool(SpringboardToolTestCase):
         self.assertEqual(lines[1], 'Destination already exists, skipping.')
         self.assertEqual(lines[2], 'Creating index for master.')
         self.assertEqual(lines[3], 'Index already exists, skipping.')
+
+
+class TestImportContentTool(SpringboardToolTestCase):
+
+    def setUp(self):
+        self.workspace = self.mk_workspace()
+
+    def test_import(self):
+        tool = ImportContentTool()
+        tool.stdout = StringIO()
+        config = self.mk_workspace_config(self.workspace)
+        config['repositories'] = {}
+        config['models'] = {
+            'elasticgit.tests.base.TestPerson': {
+                'properties': {
+                    'name': {
+                        'index': 'not_analyzed',
+                        'type': 'string',
+                    }
+                }
+            }
+        }
+
+        ini_config = self.mk_configfile({
+            'app:main': {
+                'unicore.content_repo_url': '',
+            }
+        })
+
+        _, yaml_config = self.mk_tempfile()
+        tool.run(config=(yaml_config, config),
+                 verbose=True,
+                 clobber=False,
+                 repo_dir=self.working_dir,
+                 repo_url=self.workspace.working_dir,
+                 ini_config=ini_config,
+                 ini_section='app:main',
+                 update_config=True,
+                 repo_name=None)
+
+        cp = ConfigParser()
+        cp.read(ini_config)
+        self.assertEqual(
+            cp.get('app:main', 'unicore.content_repo_url'),
+            self.workspace.working_dir)
+
+        with open(yaml_config, 'r') as fp:
+            data = yaml.safe_load(fp)
+            repo_name = parse_repo_name(self.workspace.working_dir)
+            self.assertEqual(data['repositories'], {
+                repo_name: self.workspace.working_dir
+            })

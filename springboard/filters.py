@@ -10,9 +10,10 @@ from pyramid.threadlocal import get_current_registry
 
 
 @contextfilter
-def format_date_filter(ctx, date_string, format):
-    dt = parser.parse(date_string)
-    return dt.strftime(format)
+def format_date_filter(ctx, timestamp, format):
+    if isinstance(timestamp, basestring):
+        timestamp = parser.parse(timestamp)
+    return timestamp.strftime(format)
 
 
 @contextfilter
@@ -28,4 +29,6 @@ def thumbor_filter(ctx, image, width, height=None):
 
 @contextfilter
 def markdown_filter(ctx, content):
+    if not content:
+        return content
     return markdown(content)
