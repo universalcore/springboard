@@ -9,6 +9,10 @@ Springboard
     :target: https://coveralls.io/r/universalcore/springboard?branch=develop
     :alt: Code Coverage
 
+.. image:: https://pypip.in/version/springboard/badge.svg
+    :target: https://pypi.python.org/pypi/springboard
+    :alt: Pypi Package
+
 .. image:: docs/springboard.gif
 
 Usage
