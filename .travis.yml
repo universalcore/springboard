@@ -13,3 +13,11 @@ script:
   - py.test springboard --cov springboard
 after_success:
   - coveralls
+deploy:
+  provider: pypi
+  user: Praekelt
+  password:
+    secure: "EpQZl54KYeMFhW4mbYFIbPzUyCchAwCeiaC9lyYlRw6tLU3HumII7kLmcPJ1af6uTWpkdz2mRB49FZEJCQDV57iQsyS4YPoMqLuJMrWeTP8LHKtO0leEs9Re+/qOZr3uAD0z1EvVq9YQD6ubhEycYb3FdU+qm6csQ0tmoUCu+sQ="
+  on:
+    tags: true
+    all_branches: true
