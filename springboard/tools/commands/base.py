@@ -8,7 +8,7 @@ class YAMLFile(object):
 
     def __call__(self, file_name):
         with open(file_name, 'r') as fp:
-            return yaml.safe_load(fp)
+            return file_name, yaml.safe_load(fp)
 
 
 class SpringboardToolCommand(ToolCommand):

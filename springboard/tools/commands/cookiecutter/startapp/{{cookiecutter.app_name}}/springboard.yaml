@@ -1,6 +1,5 @@
 # List of content repositories to be working with
-repositories:
-  {{cookiecutter.unicore_content_repo_name}}: '{{cookiecutter.unicore_content_repo_url}}'
+repositories: {}
 
 # List of models to be loaded and their mappings, if any.
 models:

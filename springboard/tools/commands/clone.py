@@ -19,7 +19,8 @@ class CloneRepoTool(SpringboardToolCommand):
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
-        repo_url = config['repositories'][repo_name]
+        config_file, config_data = config
+        repo_url = config_data['repositories'][repo_name]
         return self.clone_repo(repo_name,
                                repo_url,
                                repo_dir=repo_dir,

@@ -111,7 +111,7 @@ class TestCreateMapping(SpringboardToolTestCase):
             }
         }
 
-        tool.run(config=config,
+        tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
                  repo_dir=self.workspace.working_dir,
@@ -144,7 +144,7 @@ class TestSyncData(SpringboardToolTestCase):
             }
         }
 
-        tool.run(config=config,
+        tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
                  repo_dir=self.workspace.working_dir,
@@ -176,7 +176,7 @@ class TestBootstrapTool(SpringboardToolTestCase):
             }
         }
 
-        tool.run(config=config,
+        tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
                  repo_dir=self.working_dir)

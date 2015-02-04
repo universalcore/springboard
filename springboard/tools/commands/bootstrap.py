@@ -17,20 +17,27 @@ class BootstrapTool(CloneRepoTool,
     command_arguments = SpringboardToolCommand.command_arguments
 
     def run(self, config, verbose, clobber, repo_dir):
+        config_file, config_data = config
         repos = [self.clone_repo(repo_name=repo_name,
                                  repo_url=repo_url,
                                  repo_dir=repo_dir,
                                  clobber=clobber,
                                  verbose=verbose)
-                 for repo_name, repo_url in config['repositories'].items()]
+                 for repo_name, repo_url
+                 in config_data['repositories'].items()]
         for workdir, _ in repos:
-            index_created = self.create_index(workdir,
-                                              clobber=clobber,
-                                              verbose=verbose)
-            for model_name, mapping in config.get('models', {}).items():
-                model_class = load_class(model_name)
-                if index_created:
-                    self.create_mapping(workdir, model_class, mapping,
-                                        verbose=verbose)
-                self.sync_data(workdir, model_class,
-                               verbose=verbose, clobber=clobber)
+            self.bootstrap(workdir,
+                           models=config_data.get('models', {}).items(),
+                           clobber=clobber, verbose=verbose)
+
+    def bootstrap(self, workdir, models=(), clobber=False, verbose=False):
+        index_created = self.create_index(workdir,
+                                          clobber=clobber,
+                                          verbose=verbose)
+        for model_name, mapping in models:
+            model_class = load_class(model_name)
+            if index_created:
+                self.create_mapping(workdir, model_class, mapping,
+                                    verbose=verbose)
+            self.sync_data(workdir, model_class,
+                           verbose=verbose, clobber=clobber)
