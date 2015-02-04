@@ -37,8 +37,9 @@ First make sure you have Elasticsearch_ installed and running, then:
 
 .. code-block:: bash
 
-    $ springboard startapp myapp -r https://github.com/universalcore/unicore-cms-content-ffl-tanzania
+    $ springboard startapp myapp
     $ cd myapp
+    $ springboard import https://github.com/universalcore/unicore-cms-content-ffl-tanzania -v
     $ pserve development.ini --reload
 
     Starting server in PID 70411.

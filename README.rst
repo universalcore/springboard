@@ -11,6 +11,24 @@ Springboard
 
 .. image:: docs/springboard.gif
 
+Usage
+~~~~~
+
+Make sure elasticsearch_ is running, then::
+
+    $ pip install springboard
+    $ springboard startapp myapp
+    $ cd myapp
+    $ springboard import git://example.com/content/repo.git -v
+    $ pserve development.ini --reload
+
+    Starting server in PID 70411.
+    serving on http://0.0.0.0:6543
+
+
+Installing for local dev
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 Make sure elasticsearch_ is running, then::
 
     $ git clone https://github.com/universalcore/springboard.git

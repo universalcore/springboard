@@ -21,7 +21,8 @@ class SyncDataTool(SpringboardToolCommand):
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
-        for model_name, mapping in config.get('models', {}).items():
+        config_file, config_data = config
+        for model_name, mapping in config_data.get('models', {}).items():
             model_class = load_class(model_name)
             self.sync_data(os.path.join(repo_dir, repo_name), model_class,
                            verbose=verbose,
