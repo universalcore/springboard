@@ -1,8 +1,10 @@
 from datetime import datetime
+from collections import namedtuple
 
 import mock
 
 from springboard.tests.base import SpringboardTestCase
+from springboard.events import new_request
 
 
 class TestEvents(SpringboardTestCase):
@@ -20,6 +22,35 @@ class TestEvents(SpringboardTestCase):
         self.workspace.save(self.category, 'Add category')
         self.workspace.save(self.page, 'Add page')
         self.workspace.refresh_index()
+
+    def test_new_request_event_no_profile_id(self):
+        Event = namedtuple('Event', ['request', 'response'])
+        Registry = namedtuple('Registry', ['settings'])
+        request = self.mk_request()
+        request.registry = Registry(settings={})
+        new_request(Event(request=request, response=None))
+        self.assertEqual(request.google_analytics, {})
+
+    def test_new_request_event(self):
+        Event = namedtuple('Event', ['request', 'response'])
+        Registry = namedtuple('Registry', ['settings'])
+        request = self.mk_request()
+        request.remote_addr = 'remote_addr'
+        request.referer = 'referer'
+        request.user_agent = 'user_agent'
+        request.accept_language = 'language'
+        request.registry = Registry(settings={
+            'ga.profile_id': 'foo',
+        })
+        new_request(Event(request=request, response=None))
+        self.assertEqual(request.google_analytics, {
+            'dh': 'example.com',
+            'dr': 'referer',
+            'path': '/',
+            'uip': 'remote_addr',
+            'ul': 'language',
+            'user_agent': 'user_agent',
+        })
 
     @mock.patch('unicore.google.tasks.pageview.delay')
     def test_ga_pageviews(self, mock_task):
