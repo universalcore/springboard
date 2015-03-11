@@ -35,9 +35,7 @@ def new_response(event):
     response = event.response
 
     profile_id = registry.settings.get('ga.profile_id')
-    if not profile_id:
-        return
-
-    client_id = request.cookies.get('ga_client_id', uuid4().hex)
-    response.set_cookie('ga_client_id', value=client_id, max_age=ONE_YEAR)
-    pageview.delay(profile_id, client_id, request.google_analytics)
+    if profile_id:
+        client_id = request.cookies.get('ga_client_id', uuid4().hex)
+        response.set_cookie('ga_client_id', value=client_id, max_age=ONE_YEAR)
+        pageview.delay(profile_id, client_id, request.google_analytics)
