@@ -4,22 +4,12 @@ from elasticgit import EG
 
 from pyramid.view import view_config
 
-from springboard.utils import parse_repo_name
+from springboard.utils import parse_repo_name, ga_context
 
 from unicore.content.models import Category, Page
 from unicore.distribute.tasks import fastforward
 
 from slugify import slugify
-
-
-def ga_context(func):
-    def wrapper(context_func):
-        def decorator(self, *args, **kwargs):
-            context = func(self, *args, **kwargs)
-            self.request.google_analytics.update(context_func(contextt))
-            return context
-        return decorator
-    return wrapper
 
 
 class SpringboardViews(object):
@@ -52,17 +42,17 @@ class SpringboardViews(object):
     def index_view(self):
         return self.context()
 
+    @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category',
                  renderer='springboard:templates/category.jinja2')
-    @ga_context(lambda context: {'dt': context['category'].title, })
     def category(self):
         uuid = self.request.matchdict['uuid']
         [category] = self.all_categories.filter(uuid=uuid)
         return self.context(category=category)
 
+    @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='page',
                  renderer='springboard:templates/page.jinja2')
-    @ga_context(lambda context: {'dt': context['page'].title, })
     def page(self):
         uuid = self.request.matchdict['uuid']
         [page] = self.all_pages.filter(uuid=uuid)
