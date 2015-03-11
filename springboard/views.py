@@ -12,6 +12,16 @@ from unicore.distribute.tasks import fastforward
 from slugify import slugify
 
 
+def ga_context(func):
+    def wrapper(context_func):
+        def decorator(self, *args, **kwargs):
+            context = func(self, *args, **kwargs)
+            self.request.google_analytics.update(context_func(contextt))
+            return context
+        return decorator
+    return wrapper
+
+
 class SpringboardViews(object):
 
     def __init__(self, request):
@@ -44,6 +54,7 @@ class SpringboardViews(object):
 
     @view_config(route_name='category',
                  renderer='springboard:templates/category.jinja2')
+    @ga_context(lambda context: {'dt': context['category'].title, })
     def category(self):
         uuid = self.request.matchdict['uuid']
         [category] = self.all_categories.filter(uuid=uuid)
@@ -51,6 +62,7 @@ class SpringboardViews(object):
 
     @view_config(route_name='page',
                  renderer='springboard:templates/page.jinja2')
+    @ga_context(lambda context: {'dt': context['page'].title, })
     def page(self):
         uuid = self.request.matchdict['uuid']
         [page] = self.all_pages.filter(uuid=uuid)
