@@ -4,7 +4,7 @@ from elasticgit import EG
 
 from pyramid.view import view_config
 
-from springboard.utils import parse_repo_name
+from springboard.utils import parse_repo_name, ga_context
 
 from unicore.content.models import Category, Page
 from unicore.distribute.tasks import fastforward
@@ -42,6 +42,7 @@ class SpringboardViews(object):
     def index_view(self):
         return self.context()
 
+    @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category',
                  renderer='springboard:templates/category.jinja2')
     def category(self):
@@ -49,6 +50,7 @@ class SpringboardViews(object):
         [category] = self.all_categories.filter(uuid=uuid)
         return self.context(category=category)
 
+    @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='page',
                  renderer='springboard:templates/page.jinja2')
     def page(self):

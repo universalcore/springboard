@@ -82,6 +82,7 @@ class SpringboardTestCase(TestCase):
         request = testing.DummyRequest(params)
         request.locale_name = locale_name
         request.matchdict = matchdict
+        request.google_analytics = {}
         return request
 
     def mk_tempfile(self):  # pragma: no cover
