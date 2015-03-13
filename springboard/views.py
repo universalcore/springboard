@@ -18,13 +18,16 @@ class SpringboardViews(object):
         self.request = request
         self.language = request.locale_name
         self.settings = request.registry.settings
+        self.es_host = self.settings.get('es.host', 'http://localhost:9200/')
 
         repo_name = parse_repo_name(self.settings['unicore.content_repo_url'])
         repo_path = os.path.join(
             self.settings.get('unicore.repos_dir', 'repos'), repo_name)
         index_prefix = slugify(repo_name)
         self.workspace = EG.workspace(
-            repo_path, index_prefix=index_prefix)
+            repo_path,
+            es={'urls': [self.es_host]},
+            index_prefix=index_prefix)
         self.all_categories = self.workspace.S(Category)
         self.all_pages = self.workspace.S(Page)
 
