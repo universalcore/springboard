@@ -16,6 +16,7 @@ def new_request(event):
 
     profile_id = registry.settings.get('ga.profile_id')
     if not profile_id:
+        request.google_analytics = {}
         return
 
     request.google_analytics = {
