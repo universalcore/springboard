@@ -1,6 +1,6 @@
 from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.security import remember
+from pyramid.security import forget, remember
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid_beaker import set_cache_regions_from_settings
@@ -16,6 +16,7 @@ USER_DATA_SESSION_KEY = 'user_data'
 
 def includeme(config):
     config.add_route('login', '/login/')
+    config.add_route('logout', '/logout/')
     config.add_route('redirect_to_login', '/login/hub/')
     config.scan('.auth')
 
@@ -101,3 +102,15 @@ class AuthViews(object):
 
         return HTTPFound(hubclient.get_login_redirect_url(
             callback_url, locale=self.locale))
+
+    @view_config(route_name='logout')
+    def logout(self):
+        response = HTTPFound(headers=forget(self.request))
+
+        if self.request.referrer and same_origin(
+                self.request.referrer, self.request.current_route_url()):
+            response.location = self.request.referrer
+        else:
+            response.location = self.request.route_url(route_name='home')
+
+        return response
