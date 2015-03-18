@@ -30,6 +30,7 @@ class SpringboardViews(object):
 
     def context(self, **context):
         defaults = {
+            'user': self.request.user,
             'language': self.language,
             'all_categories': self.all_categories,
             'all_pages': self.all_pages,

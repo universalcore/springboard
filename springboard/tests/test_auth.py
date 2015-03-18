@@ -115,16 +115,8 @@ class TestAuth(SpringboardTestCase):
         self.assertNotIn('beaker.session.id', self.app.cookies)
 
     def test_auth_policy(self):
-        user_data = {
-            'uuid': 'imauuid',
-            'username': 'foo',
-            'app_data': {'display_name': 'foobar'}
-        }
         request = testing.DummyRequest()
-
-        session = Session(request, id='imabeakerid', use_cookies=False)
-        session[USER_DATA_SESSION_KEY] = user_data
-        session['auth.userid'] = user_data['uuid']
+        session = self.mk_session(user_data={'uuid': 'imauuid'})[0]
         request.session = session
 
         auth_policy = self.app.app.registry.queryUtility(IAuthenticationPolicy)
@@ -137,19 +129,13 @@ class TestAuth(SpringboardTestCase):
             'username': 'foo',
             'app_data': {'display_name': 'foobar'}
         }
-        session = Session(
-            testing.DummyRequest(), id='imabeakerid', use_cookies=False)
-        session[USER_DATA_SESSION_KEY] = user_data
-        session['auth.userid'] = user_data['uuid']
-        session.save()
-        session = Session(
-            testing.DummyRequest(), id='imabeakerid2', use_cookies=False)
-        session.save()
+        header_auth = self.mk_session(user_data=user_data)[1]
+        header_no_auth = self.mk_session(logged_in=False)[1]
 
         request_auth = webob.Request.blank('/')
-        request_auth.headers['Cookie'] = 'beaker.session.id=imabeakerid'
+        request_auth.headers.update(header_auth)
         request_no_auth = webob.Request.blank('/')
-        request_no_auth.headers['Cookie'] = 'beaker.session.id=imabeakerid2'
+        request_no_auth.headers.update(header_no_auth)
 
         with mock.patch.object(self.app.app, 'handle_request') as mock_handler:
             mock_handler.return_value = mock.Mock()
@@ -162,3 +148,48 @@ class TestAuth(SpringboardTestCase):
         self.assertEqual(internal_request_auth.user.data, user_data)
         self.assertTrue(hasattr(internal_request_no_auth, 'user'))
         self.assertEqual(internal_request_no_auth.user, None)
+
+    def test_logout(self):
+        url = '/logout/'
+
+        request_with_all = TestRequest.blank(
+            url, method='GET', referrer='http://localhost/content/list/',
+            headers=self.mk_session()[1])
+        request_without_ref = TestRequest.blank(
+            url, method='GET', headers=self.mk_session()[1])
+        request_with_invalid_ref = TestRequest.blank(
+            url, method='GET', referrer='http://example.com/page/',
+            headers=self.mk_session()[1])
+
+        for request in (request_with_all,
+                        request_without_ref,
+                        request_with_invalid_ref):
+            resp = self.app.request(request)
+
+            self.assertEqual(resp.status_int, 302)
+            if request == request_with_all:
+                self.assertEqual(resp.location, request.referrer)
+            else:
+                self.assertEqual(resp.location, 'http://localhost/')
+
+            # check that the session is no longer authenticated
+            session = Session(
+                request,
+                id=request.cookies['beaker.session.id'],
+                use_cookies=False)
+            self.assertNotIn('auth.userid', session)
+
+            self.app.reset()
+
+    def test_auth_template(self):
+        session, headers = self.mk_session()
+
+        resp = self.app.get('/', headers=headers)
+        self.assertIn('You are signed in as ', resp.body)
+        self.assertIn('Sign Out', resp.body)
+
+        del session['auth.userid']
+        session.save()
+
+        resp = self.app.get('/', headers=headers)
+        self.assertIn('Sign In', resp.body)

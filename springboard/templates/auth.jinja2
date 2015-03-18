@@ -1,0 +1,8 @@
+<div class="auth">
+    {% if user %}
+    <span>{% trans username=user.get('username') %}You are signed in as {{ username }}.{% endtrans %}</span>
+    <a href="{{ 'logout'|route_url }}">{{ _('Sign Out') }}</a>
+    {% else %}
+    <a href="{{ 'redirect_to_login'|route_url }}">{{ _('Sign In') }}</a>
+    {% endif %}
+</div>
