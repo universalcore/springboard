@@ -29,7 +29,8 @@ class TestViews(SpringboardTestCase):
         views = SpringboardViews(self.mk_request())
         context = views.index_view()
         self.assertEqual(set(context.keys()),
-                         set(['language', 'all_categories', 'all_pages']))
+                         set(['user', 'language', 'all_categories',
+                              'all_pages']))
 
     def test_category(self):
         [category] = self.mk_categories(self.workspace, count=1)

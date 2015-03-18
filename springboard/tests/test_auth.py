@@ -180,3 +180,16 @@ class TestAuth(SpringboardTestCase):
             self.assertNotIn('auth.userid', session)
 
             self.app.reset()
+
+    def test_auth_template(self):
+        session, headers = self.mk_session()
+
+        resp = self.app.get('/', headers=headers)
+        self.assertIn('You are signed in as ', resp.body)
+        self.assertIn('Sign Out', resp.body)
+
+        del session['auth.userid']
+        session.save()
+
+        resp = self.app.get('/', headers=headers)
+        self.assertIn('Sign In', resp.body)
