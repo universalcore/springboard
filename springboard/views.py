@@ -8,6 +8,7 @@ from springboard.utils import parse_repo_name, ga_context
 
 from unicore.content.models import Category, Page
 from unicore.distribute.tasks import fastforward
+from utils import EGPaginator
 
 from slugify import slugify
 
@@ -51,6 +52,46 @@ class SpringboardViews(object):
         [category] = self.all_categories.filter(uuid=uuid)
         return self.context(category=category)
 
+    @view_config(route_name='search',
+                 renderer='springboard:templates/search_results.jinja2')
+    def search(self):
+
+        query = self.request.GET.get('q')
+        p = int(self.request.GET.get('p', 0))
+
+        empty_defaults = {
+            'paginator': [],
+            'query': query,
+            'p': p,
+        }
+
+        # handle query exception
+        if not query:
+            return empty_defaults
+
+        all_results = self.workspace.S(Page).query(
+            content__query_string=query).filter(language=self.language)
+
+        # no results found
+        if all_results.count() == 0:
+            return empty_defaults
+
+        paginator = EGPaginator(all_results, p)
+
+        # requested page number is out of range
+        total_pages = paginator.total_pages()
+        # sets the floor to 0
+        p = p if p >= 0 else 0
+        # sets the roof to `total_pages -1`
+        p = p if p < total_pages else total_pages - 1
+        paginator = EGPaginator(all_results, p)
+
+        return {
+            'paginator': paginator,
+            'query': query,
+            'p': p,
+        }
+
     @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='page',
                  renderer='springboard:templates/page.jinja2')
@@ -74,3 +115,7 @@ class SpringboardViews(object):
         fastforward.delay(self.workspace.working_dir,
                           self.workspace.index_prefix)
         return {}
+
+    def get_category(self, uuid):
+        [category] = self.workspace.S(Category).filter(uuid=uuid)
+        return category.get_object()
