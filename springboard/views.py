@@ -3,6 +3,7 @@ import os
 from elasticgit import EG
 
 from pyramid.view import view_config
+from pyramid.view import notfound_view_config
 
 from springboard.utils import parse_repo_name, ga_context
 
@@ -73,4 +74,9 @@ class SpringboardViews(object):
     def api_notify(self):
         fastforward.delay(self.workspace.working_dir,
                           self.workspace.index_prefix)
+        return {}
+
+    @notfound_view_config(renderer='springboard:templates/404.jinja2')
+    def notfound(self):
+        self.request.response.status = 404
         return {}

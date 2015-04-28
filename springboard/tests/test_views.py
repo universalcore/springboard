@@ -59,6 +59,12 @@ class TestViews(SpringboardTestCase):
         context = views.flat_page()
         self.assertEqual(context['page'].uuid, page.uuid)
 
+    def test_404_page(self):
+        self.app = self.mk_app(self.workspace)
+        resp = self.app.get('/blahblah', expect_errors=True)
+        self.assertIn('<h1>404 not found</h1>', resp.body)
+        self.assertEqual(resp.status_int, 404)
+
     @mock.patch('unicore.distribute.tasks.fastforward.delay')
     def test_api_notify(self, mock_delay):
         request = self.mk_request()
