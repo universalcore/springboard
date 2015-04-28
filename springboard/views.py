@@ -77,5 +77,6 @@ class SpringboardViews(object):
         return {}
 
     @notfound_view_config(renderer='springboard:templates/404.jinja2')
-    def notfound(request):
+    def notfound(self):
+        self.request.response.status = 404
         return {}
