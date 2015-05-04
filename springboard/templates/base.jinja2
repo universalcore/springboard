@@ -14,14 +14,13 @@
     <div id="header">
         <div class="lang">
             <div>
-                {% for code, name in languages %}
-                <span>
-                    <a href="/locale/?language={{code}}">{{name}}</a>
-                    {% if not forloop.last %}
-                        <span> |</span>
-                    {% endif %}
-                </span>
+                {% for lang_code, lang_name in view.get_display_languages() %}
+                <li>
+                    <a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
+                </li>
                 {% endfor %}
+                    <li><a href="/spice/locale/change/">&gt;&gt;</a></li>
+                </ul>
           </div>
         </div>
         <div class="logo"><a href="/" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
