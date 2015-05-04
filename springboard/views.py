@@ -118,4 +118,4 @@ class SpringboardViews(object):
 
     def get_category(self, uuid):
         [category] = self.workspace.S(Category).filter(uuid=uuid)
-        return category.get_object()
+        return category.to_object()
