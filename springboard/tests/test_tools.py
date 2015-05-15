@@ -96,7 +96,8 @@ class TestCreateIndex(SpringboardToolTestCase):
             verbose=True,
             clobber=False,
             repo_dir=self.workspace.working_dir,
-            repo_name=self.mk_workspace_name(self.workspace))
+            repo_name=self.mk_workspace_name(self.workspace),
+            es_hosts=['http://localhost:9200'])
         output = tool.stdout.getvalue()
         self.assertTrue(output.endswith('Index already exists, skipping.\n'))
 
@@ -106,7 +107,8 @@ class TestCreateIndex(SpringboardToolTestCase):
             verbose=True,
             clobber=True,
             repo_dir=self.workspace.working_dir,
-            repo_name=self.mk_workspace_name(self.workspace))
+            repo_name=self.mk_workspace_name(self.workspace),
+            es_hosts=['http://localhost:9200'])
         output = tool.stdout.getvalue()
         self.assertTrue(
             output.endswith('Clobbering existing index.\nIndex created.\n'))
@@ -138,7 +140,8 @@ class TestCreateMapping(SpringboardToolTestCase):
                  verbose=True,
                  clobber=False,
                  repo_dir=self.workspace.working_dir,
-                 repo_name=self.mk_workspace_name(self.workspace))
+                 repo_name=self.mk_workspace_name(self.workspace),
+                 es_hosts=['http://localhost:9200'])
         self.assertEqual(
             tool.stdout.getvalue(),
             'Creating mapping for elasticgit.tests.base.TestPerson.\n'
@@ -171,7 +174,8 @@ class TestSyncData(SpringboardToolTestCase):
                  verbose=True,
                  clobber=False,
                  repo_dir=self.workspace.working_dir,
-                 repo_name=self.mk_workspace_name(self.workspace))
+                 repo_name=self.mk_workspace_name(self.workspace),
+                 es_hosts=['http://localhost:9200'])
         self.assertEqual(
             tool.stdout.getvalue(),
             'Syncing data for elasticgit.tests.base.TestPerson.\n'
@@ -202,7 +206,8 @@ class TestBootstrapTool(SpringboardToolTestCase):
         tool.run(config=('springboard.yaml', config),
                  verbose=True,
                  clobber=False,
-                 repo_dir=self.working_dir)
+                 repo_dir=self.working_dir,
+                 es_hosts=['http://localhost:9200'])
 
         lines = tool.stdout.getvalue().split('\n')
         self.assertTrue(lines[0].startswith('Cloning'))
@@ -250,7 +255,9 @@ class TestImportContentTool(SpringboardToolTestCase):
                  ini_config=ini_config,
                  ini_section='app:main',
                  update_config=True,
-                 repo_name=None)
+                 repo_name=None,
+                 es_hosts=['http://localhost:9200']
+                 )
 
         cp = ConfigParser()
         cp.read(ini_config)

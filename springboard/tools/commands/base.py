@@ -17,7 +17,7 @@ class SpringboardToolCommand(ToolCommand):
         CommandArgument(
             '-c', '--config',
             dest='config',
-            help='The configuration file to load',
+            help='The configuration file to load.',
             default='springboard.yaml',
             type=YAMLFile(),
         ),

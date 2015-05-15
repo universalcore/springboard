@@ -37,10 +37,17 @@ class ImportContentTool(BootstrapTool):
             '-n', '--name',
             dest='repo_name',
             help='Give the repository a custom name on disk.'),
+        CommandArgument(
+            '-eh', '--es-host',
+            dest='es_hosts',
+            help='The Elasticsearch host.',
+            default=['http://localhost:9200/'],
+            nargs='+'),
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_url,
-            ini_config, ini_section, update_config, repo_name):
+            ini_config, ini_section, update_config, repo_name,
+            es_hosts):
         config_file, config_data = config
         repo_name = repo_name or parse_repo_name(repo_url)
         workdir, _ = self.clone_repo(repo_name=repo_name,
@@ -51,6 +58,7 @@ class ImportContentTool(BootstrapTool):
         self.bootstrap(
             workdir,
             config_data.get('models', {}).items(),
+            es={'urls': es_hosts},
             clobber=clobber,
             verbose=verbose)
 
