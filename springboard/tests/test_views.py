@@ -88,8 +88,7 @@ class TestViews(SpringboardTestCase):
             'unicore.content_repo_urls': '\n%s\n%s' % (workspace1.working_dir,
                                                        workspace2.working_dir),
         })
-        request = self.mk_request()
-        views = SpringboardViews(request)
+        views = SpringboardViews(self.mk_request())
         indexes = map(
             lambda path: '%s-master' % slugify(parse_repo_name(path)),
             [workspace1.working_dir, workspace2.working_dir])
