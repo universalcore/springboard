@@ -19,6 +19,10 @@ class SpringboardViews(object):
         self.request = request
         self.language = request.locale_name
         self.settings = request.registry.settings
+        es_host = self.settings.get('es.host', 'http://localhost:9200')
+        self.es_settings = {
+            'urls': [es_host]
+        }
 
         repo_dir = self.settings.get('unicore.repos_dir', 'repos')
         repo_names = map(
@@ -35,8 +39,9 @@ class SpringboardViews(object):
             'in_': self.all_repo_paths,
             'index_prefixes': self.all_index_prefixes
         }
-        self.all_categories = SM(Category, **search_config)
-        self.all_pages = SM(Page, **search_config)
+        self.all_categories = SM(Category, **search_config).es(
+            **self.es_settings)
+        self.all_pages = SM(Page, **search_config).es(**self.es_settings)
 
     def context(self, **context):
         defaults = {
