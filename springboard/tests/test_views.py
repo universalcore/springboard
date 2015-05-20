@@ -1,8 +1,10 @@
 from springboard.tests import SpringboardTestCase
 from springboard.views import SpringboardViews
+from springboard.utils import parse_repo_name
 
 from pyramid import testing
 
+from slugify import slugify
 import mock
 
 
@@ -77,3 +79,19 @@ class TestViews(SpringboardTestCase):
         self.assertEqual(response, {})
         self.assertEqual(working_dir, self.workspace.working_dir)
         self.assertEqual(index_prefix, self.workspace.index_prefix)
+
+    def test_multiple_repos(self):
+        workspace1 = self.workspace
+        workspace2 = self.mk_workspace(name='test_multiple_repos-2')
+        testing.setUp(settings={
+            'unicore.repos_dir': self.working_dir,
+            'unicore.content_repo_urls': '\n%s\n%s' % (workspace1.working_dir,
+                                                       workspace2.working_dir),
+        })
+        request = self.mk_request()
+        views = SpringboardViews(request)
+        indexes = map(
+            lambda path: '%s-master' % slugify(parse_repo_name(path)),
+            [workspace1.working_dir, workspace2.working_dir])
+        self.assertEqual(indexes, views.all_pages.get_indexes())
+        self.assertEqual(indexes, views.all_categories.get_indexes())
