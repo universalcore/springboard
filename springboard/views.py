@@ -1,6 +1,5 @@
 import os
 
-from elasticgit import EG
 from elasticgit.search import SM
 
 from pyramid.view import view_config
@@ -21,16 +20,20 @@ class SpringboardViews(object):
         self.language = request.locale_name
         self.settings = request.registry.settings
 
-        repo_name = parse_repo_name(self.settings['unicore.content_repo_url'])
-        repo_path = os.path.join(
-            self.settings.get('unicore.repos_dir', 'repos'), repo_name)
-        index_prefix = slugify(repo_name)
-        self.workspace = EG.workspace(
-            repo_path, index_prefix=index_prefix)
+        repo_dir = self.settings.get('unicore.repos_dir', 'repos')
+        repo_names = map(
+            lambda repo_url: parse_repo_name(repo_url),
+            self.settings['unicore.content_repo_urls'].strip().split('\n'))
+        self.all_repo_paths = map(
+            lambda repo_name: os.path.join(repo_dir, repo_name),
+            repo_names)
+        self.all_index_prefixes = map(
+            lambda repo_name: slugify(repo_name),
+            repo_names)
 
         search_config = {
-            'in_': [self.workspace.repo],
-            'index_prefixes': [index_prefix]
+            'in_': self.all_repo_paths,
+            'index_prefixes': self.all_index_prefixes
         }
         self.all_categories = SM(Category, **search_config)
         self.all_pages = SM(Page, **search_config)
@@ -78,8 +81,9 @@ class SpringboardViews(object):
 
     @view_config(route_name='api_notify', renderer='json')
     def api_notify(self):
-        fastforward.delay(self.workspace.working_dir,
-                          self.workspace.index_prefix)
+        for working_dir, index_prefix in zip(self.all_repo_paths,
+                                             self.all_index_prefixes):
+            fastforward.delay(os.path.abspath(working_dir), index_prefix)
         return {}
 
     @notfound_view_config(renderer='springboard:templates/404.jinja2')

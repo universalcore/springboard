@@ -12,7 +12,7 @@ class TestViews(SpringboardTestCase):
         self.workspace = self.mk_workspace()
         self.config = testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_url': self.workspace.working_dir,
+            'unicore.content_repo_urls': self.workspace.working_dir,
         })
 
     def tearDown(self):
