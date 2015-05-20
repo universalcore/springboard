@@ -1,6 +1,7 @@
 import os
 
 from elasticgit import EG
+from elasticgit.search import SM
 
 from pyramid.view import view_config
 from pyramid.view import notfound_view_config
@@ -26,8 +27,13 @@ class SpringboardViews(object):
         index_prefix = slugify(repo_name)
         self.workspace = EG.workspace(
             repo_path, index_prefix=index_prefix)
-        self.all_categories = self.workspace.S(Category)
-        self.all_pages = self.workspace.S(Page)
+
+        search_config = {
+            'in_': [self.workspace.repo],
+            'index_prefixes': [index_prefix]
+        }
+        self.all_categories = SM(Category, **search_config)
+        self.all_pages = SM(Page, **search_config)
 
     def context(self, **context):
         defaults = {
