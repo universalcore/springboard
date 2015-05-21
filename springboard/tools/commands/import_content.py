@@ -1,3 +1,4 @@
+from itertools import chain
 from ConfigParser import ConfigParser
 
 import yaml
@@ -68,15 +69,22 @@ class ImportContentTool(BootstrapTool):
             self.emit('Added %s to the %s config file.' % (
                 repo_name, config_file))
 
-        config_key = 'unicore.content_repo_url'
+        config_key = 'unicore.content_repo_urls'
 
         cp = ConfigParser()
         cp.read(ini_config)
         if not cp.has_section(ini_section):
             cp.add_section(ini_section)
 
-        cp.set(ini_section, config_key, repo_url)
-        with open(ini_config, 'w') as fp:
-            cp.write(fp)
-        self.emit(
-            'Updated unicore.content_repo_url in %s.' % (ini_config,))
+        existing_repo_urls = (cp.get(ini_section, config_key)
+                              if cp.has_option(ini_section, config_key)
+                              else '')
+        existing_repo_urls = existing_repo_urls.strip().split('\n')
+
+        if repo_url not in existing_repo_urls:
+            cp.set(ini_section, config_key,
+                   '\n'.join(chain(existing_repo_urls, [repo_url])))
+            with open(ini_config, 'w') as fp:
+                cp.write(fp)
+            self.emit(
+                'Updated unicore.content_repo_urls in %s.' % (ini_config,))

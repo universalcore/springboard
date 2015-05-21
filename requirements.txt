@@ -1,4 +1,4 @@
-elastic-git>=0.3.3
+elastic-git>=1.1.0
 unicore.content
 unicore.google
 unicore.distribute

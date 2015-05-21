@@ -237,7 +237,7 @@ class TestImportContentTool(SpringboardToolTestCase):
 
         ini_config = self.mk_configfile({
             'app:main': {
-                'unicore.content_repo_url': '',
+                'unicore.content_repo_urls': '',
             }
         })
 
@@ -255,7 +255,7 @@ class TestImportContentTool(SpringboardToolTestCase):
         cp = ConfigParser()
         cp.read(ini_config)
         self.assertEqual(
-            cp.get('app:main', 'unicore.content_repo_url'),
+            cp.get('app:main', 'unicore.content_repo_urls').strip(),
             self.workspace.working_dir)
 
         with open(yaml_config, 'r') as fp:
