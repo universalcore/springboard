@@ -2,6 +2,12 @@
 
 {% block content %}
 
-<h1>This is locale change</h1>
+<ul>
+{% for lang_code, lang_name in view.get_available_languages() %}
+	<li>
+		<a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
+	</li>
+{% endfor %}
+</ul>
 
 {% endblock %}
