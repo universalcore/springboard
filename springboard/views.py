@@ -107,12 +107,12 @@ class SpringboardViews(object):
         route_name='locale_change',
         renderer='springboard:templates/locale_change.jinja2')
     def locale_change(self):
-        return {
-            'languages': self.get_featured_languages() +
-            sorted(list(set(self.get_available_languages()) -
-                        set(self.get_featured_languages())),
-                   key=lambda tup: tup[1].lower())
-        }
+        return self.context(
+            languages=(
+                self.get_featured_languages() +
+                sorted(list(set(self.get_available_languages()) -
+                       set(self.get_featured_languages())),
+                       key=lambda tup: tup[1].lower())))
 
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
