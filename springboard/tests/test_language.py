@@ -1,4 +1,5 @@
 from springboard.tests import SpringboardTestCase
+from springboard.views import SpringboardViews
 
 from pyramid import testing
 
@@ -9,7 +10,7 @@ class TestLanguages(SpringboardTestCase):
         self.workspace = self.mk_workspace()
 
         languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
-                     "('spa_ES', 'Spanish')]")
+                     "('fre_FR', 'French'), ('spa_ES', 'Spanish')]")
         featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
 
         settings = {
@@ -48,7 +49,7 @@ class TestLanguages(SpringboardTestCase):
         self.assertTrue('Spanish Category' in resp.body)
         self.assertFalse('English Category' in resp.body)
 
-    def test_locales_displayed(self):
+    def test_change_locale_page(self):
         resp = self.app.get('/locale/change/')
         print resp.body
         self.assertTrue(
@@ -60,3 +61,21 @@ class TestLanguages(SpringboardTestCase):
         self.assertTrue(
             u'<a href="http://localhost/locale/swa_KE/">Kiswahili</a>'
             in resp.body.decode('utf-8'))
+
+    def test_locales_displayed(self):
+        view = SpringboardViews(self.mk_request())
+        langs = view.get_display_languages()
+        self.assertEqual(
+            langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
+
+        view = SpringboardViews(self.mk_request(locale_name='fre_FR'))
+        langs = view.get_display_languages()
+        self.assertEqual(
+            langs,
+            [('fre_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
+             ('spa_ES', u'espa\xf1ol')])
+
+        view = SpringboardViews(self.mk_request(locale_name='spa_ES'))
+        langs = view.get_display_languages()
+        self.assertEqual(
+            langs, [('spa_ES', u'espa\xf1ol'), ('eng_GB', 'English')])
