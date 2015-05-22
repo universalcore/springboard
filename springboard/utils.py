@@ -42,9 +42,34 @@ def ga_context(context_func):
 
 
 def config_list(data):
+    """
+    A function that takes a string of values separated by newline characters
+    and returns a list of those values
+
+    :param func context_func:
+        A function which takes one argument, a string of values separated by 
+        newline characters
+
+    :returns:
+        A list containing the values separated by newline characters, 
+        stripped of whitespace between the value and newline character
+
+    """
     return filter(None, (x.strip() for x in data.splitlines()))
 
 
 def config_dict(data):
+    """
+    A function that takes a string of pair values, indicated by '=', separated 
+    by newline characters and returns a dict of those value pairs
+
+    :param func context_func:
+        A function which takes one argument, a string of value pairs with 
+        '= between them' separated by newline characters
+
+    :returns:
+        A dict containing the value pairs separated by newline characters
+
+    """
     lines = config_list(data)
     return dict(re.split('\s*=\s*', value) for value in lines)
