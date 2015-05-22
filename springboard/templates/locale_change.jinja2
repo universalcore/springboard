@@ -5,7 +5,7 @@
 <ul>
 {% for lang_code, lang_name in available_languages.items() %}
 	<li>
-		<a href="{{'locale_matched'|route_url(language=lang_code) }}">{{lang_name}}</a>
+		<a href="{{'locale_matched'|route_url(language=lang_code) }}">{{lang_code|display_language_name}}</a>
 	</li>
 {% endfor %}
 </ul>

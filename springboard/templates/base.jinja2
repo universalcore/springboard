@@ -14,9 +14,9 @@
     <div id="header">
         <div class="lang">
             <div>
-                {% for lang_code, lang_name in display_languages.items() %}
+                {% for lang_code, name in display_languages.items() %}
                 <li>
-                    <a href="{{'locale_matched'|route_url(language=lang_code)}}">{{lang_name}}</a>
+                    <a href="{{'locale_matched'|route_url(language=lang_code)}}">{{lang_code|display_language_name}}</a>
                 </li>
                 {% endfor %}
                     <li><a href="{{'locale_change'|route_url}}">&gt;&gt;</a></li>

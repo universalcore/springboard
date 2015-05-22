@@ -1,10 +1,5 @@
 import os
 
-from babel import Locale
-from pycountry import languages
-
-from ast import literal_eval
-
 from elasticgit.search import SM
 
 from pyramid.view import view_config
@@ -131,14 +126,9 @@ class SpringboardViews(object):
 
         return HTTPFound(location='/', headers=response.headers)
 
-    def get_display_name(self, locale):
-        language_code, _, country_code = locale.partition('_')
-        term_code = languages.get(bibliographic=language_code).terminology
-        return Locale.parse(term_code).language_name
-
     def get_display_languages(self):
         to_display = [
-            code for code, name in
+            code for code in
             self.featured_languages or self.available_languages[:2]
         ]
 
@@ -146,5 +136,5 @@ class SpringboardViews(object):
             set(to_display) - set([self.language])),
             key=lambda tup: tup[1].lower())
         return [
-            (code, self.get_display_name(code))
+            (code)
             for code in featured_and_current]

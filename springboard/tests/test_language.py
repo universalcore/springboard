@@ -68,16 +68,15 @@ class TestLanguages(SpringboardTestCase):
         view = SpringboardViews(self.mk_request())
         langs = view.get_display_languages()
         self.assertEqual(
-            langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
+            langs, ['eng_GB', 'spa_ES'])
 
         view = SpringboardViews(self.mk_request(locale_name='fre_FR'))
         langs = view.get_display_languages()
         self.assertEqual(
             langs,
-            [('fre_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
-             ('spa_ES', u'espa\xf1ol')])
+            ['fre_FR', 'eng_GB', 'spa_ES'])
 
         view = SpringboardViews(self.mk_request(locale_name='spa_ES'))
         langs = view.get_display_languages()
         self.assertEqual(
-            langs, [('spa_ES', u'espa\xf1ol'), ('eng_GB', 'English')])
+            langs, ['spa_ES', 'eng_GB'])
