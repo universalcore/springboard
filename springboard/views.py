@@ -5,7 +5,6 @@ from pycountry import languages
 
 from ast import literal_eval
 
-from elasticgit import EG
 from elasticgit.search import SM
 
 from pyramid.view import view_config
