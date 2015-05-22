@@ -1,3 +1,4 @@
+import re
 from functools import wraps
 from urlparse import urlparse
 
@@ -38,3 +39,12 @@ def ga_context(context_func):
             return context
         return wrapper
     return decorator
+
+
+def config_list(data):
+    return filter(None, (x.strip() for x in data.splitlines()))
+
+
+def config_dict(data):
+    lines = config_list(data)
+    return dict(re.split('\s*=\s*', value) for value in lines)
