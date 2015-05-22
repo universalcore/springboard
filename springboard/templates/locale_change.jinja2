@@ -3,7 +3,7 @@
 {% block content %}
 
 <ul>
-{% for lang_code, lang_name in view.get_available_languages() %}
+{% for lang_code, lang_name in available_languages.items() %}
 	<li>
 		<a href="{{'locale_matched'|route_url(language=lang_code) }}">{{lang_name}}</a>
 	</li>

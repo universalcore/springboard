@@ -12,7 +12,8 @@ from pyramid.view import notfound_view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 
-from springboard.utils import parse_repo_name, ga_context
+from springboard.utils import (
+    parse_repo_name, ga_context, config_list, config_dict)
 
 from unicore.content.models import Category, Page
 from unicore.distribute.tasks import fastforward
@@ -34,7 +35,7 @@ class SpringboardViews(object):
         repo_dir = self.settings.get('unicore.repos_dir', 'repos')
         repo_names = map(
             lambda repo_url: parse_repo_name(repo_url),
-            self.settings['unicore.content_repo_urls'].strip().split('\n'))
+            config_list(self.settings['unicore.content_repo_urls']))
         self.all_repo_paths = map(
             lambda repo_name: os.path.join(repo_dir, repo_name),
             repo_names)
@@ -49,10 +50,19 @@ class SpringboardViews(object):
         self.all_categories = SM(Category, **search_config).es(
             **self.es_settings)
         self.all_pages = SM(Page, **search_config).es(**self.es_settings)
+        self.available_languages = config_dict(
+            self.settings.get('available_languages', ''))
+        self.featured_languages = config_dict(
+            self.settings.get('featured_languages', ''))
+        self.display_languages = self.available_languages.copy()
+        self.display_languages.update(self.featured_languages)
 
     def context(self, **context):
         defaults = {
             'user': self.request.user,
+            'available_languages': self.available_languages,
+            'featured_languages': self.featured_languages,
+            'display_languages': self.display_languages,
             'language': self.language,
             'all_categories': self.all_categories,
             'all_pages': self.all_pages,
@@ -107,12 +117,7 @@ class SpringboardViews(object):
         route_name='locale_change',
         renderer='springboard:templates/locale_change.jinja2')
     def locale_change(self):
-        return self.context(
-            languages=(
-                self.get_featured_languages() +
-                sorted(list(set(self.get_available_languages()) -
-                       set(self.get_featured_languages())),
-                       key=lambda tup: tup[1].lower())))
+        return self.context()
 
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
@@ -126,22 +131,6 @@ class SpringboardViews(object):
 
         return HTTPFound(location='/', headers=response.headers)
 
-    def get_available_languages(self):
-        available_languages = sorted(literal_eval(
-            (self.settings.get('available_languages', '[]'))),
-            key=lambda tup: tup[1].lower())
-        return [
-            (code, self.get_display_name(code))
-            for code, name in available_languages]
-
-    def get_featured_languages(self):
-        featured_languages = sorted(literal_eval(
-            (self.settings.get('featured_languages', '[]'))),
-            key=lambda tup: tup[1].lower())
-        return [
-            (code, self.get_display_name(code))
-            for code, name in featured_languages]
-
     def get_display_name(self, locale):
         language_code, _, country_code = locale.partition('_')
         term_code = languages.get(bibliographic=language_code).terminology
@@ -150,7 +139,7 @@ class SpringboardViews(object):
     def get_display_languages(self):
         to_display = [
             code for code, name in
-            self.get_featured_languages() or self.get_available_languages()[:2]
+            self.featured_languages or self.available_languages[:2]
         ]
 
         featured_and_current = [self.language] + sorted(list(

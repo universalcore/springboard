@@ -7,16 +7,18 @@ class TestLanguages(SpringboardTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
-
-        languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
-                     "('spa_ES', 'Spanish')]")
-        featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
-
         settings = {
             'unicore.repos_dir': self.working_dir,
             'unicore.content_repo_urls': self.workspace.working_dir,
-            'available_languages': languages,
-            'featured_languages': featured_langs
+            'available_languages': '\n'.join([
+                'eng_GB = English',
+                'swa_KE = Swahili',
+                'spa_ES = Spanish',
+            ]),
+            'featured_languages': '\n'.join([
+                'spa_ES = Spanish',
+                'eng_GB = English',
+            ])
         }
         self.config = testing.setUp(settings=settings)
         self.app = self.mk_app(self.workspace, settings=settings)
