@@ -111,7 +111,7 @@ class SpringboardViews(object):
     @notfound_view_config(renderer='springboard:templates/404.jinja2')
     def notfound(self):
         self.request.response.status = 404
-        return {}
+        return self.context()
 
     @view_config(
         route_name='locale_change',
