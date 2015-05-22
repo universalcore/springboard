@@ -15,6 +15,8 @@ from unicore.distribute.tasks import fastforward
 
 from slugify import slugify
 
+ONE_YEAR = 31536000
+
 
 class SpringboardViews(object):
 
@@ -122,6 +124,6 @@ class SpringboardViews(object):
             self.request.GET.get('language')
 
         if language:
-            response.set_cookie('_LOCALE_', value=language, max_age=31536000)
+            response.set_cookie('_LOCALE_', value=language, max_age=ONE_YEAR)
 
         return HTTPFound(location='/', headers=response.headers)
