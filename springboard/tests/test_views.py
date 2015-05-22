@@ -1,5 +1,5 @@
 from springboard.tests import SpringboardTestCase
-from springboard.views import SpringboardViews
+from springboard.views.core import CoreViews
 from springboard.utils import parse_repo_name
 
 from pyramid import testing
@@ -21,14 +21,14 @@ class TestViews(SpringboardTestCase):
         testing.tearDown()
 
     def test_default_context(self):
-        views = SpringboardViews(self.mk_request())
+        views = CoreViews(self.mk_request())
         context = views.context()
         self.assertEqual(context['language'], 'eng_GB')
         self.assertEqual(context['all_categories'].count(), 0)
         self.assertEqual(context['all_pages'].count(), 0)
 
     def test_index_view(self):
-        views = SpringboardViews(self.mk_request())
+        views = CoreViews(self.mk_request())
         context = views.index_view()
         self.assertEqual(set(context.keys()),
                          set(['user', 'language', 'all_categories',
@@ -36,7 +36,7 @@ class TestViews(SpringboardTestCase):
 
     def test_category(self):
         [category] = self.mk_categories(self.workspace, count=1)
-        views = SpringboardViews(
+        views = CoreViews(
             self.mk_request(matchdict={'uuid': category.uuid}))
         context = views.category()
         self.assertEqual(context['category'].uuid, category.uuid)
@@ -46,7 +46,7 @@ class TestViews(SpringboardTestCase):
         [category] = self.mk_categories(self.workspace, count=1)
         [page] = self.mk_pages(self.workspace, count=1,
                                primary_category=category.uuid)
-        views = SpringboardViews(
+        views = CoreViews(
             self.mk_request(matchdict={'uuid': page.uuid}))
         context = views.page()
         self.assertEqual(context['category'].uuid, category.uuid)
@@ -56,7 +56,7 @@ class TestViews(SpringboardTestCase):
 
     def test_flatpage(self):
         [page] = self.mk_pages(self.workspace, count=1)
-        views = SpringboardViews(
+        views = CoreViews(
             self.mk_request(matchdict={'slug': page.slug}))
         context = views.flat_page()
         self.assertEqual(context['page'].uuid, page.uuid)
@@ -72,7 +72,7 @@ class TestViews(SpringboardTestCase):
         request = self.mk_request()
         request.method = 'POST'
 
-        views = SpringboardViews(request)
+        views = CoreViews(request)
         response = views.api_notify()
         mock_delay.assert_called_once()
         (working_dir, index_prefix), _ = mock_delay.call_args_list[0]
@@ -88,7 +88,7 @@ class TestViews(SpringboardTestCase):
             'unicore.content_repo_urls': '\n%s\n%s' % (workspace1.working_dir,
                                                        workspace2.working_dir),
         })
-        views = SpringboardViews(self.mk_request())
+        views = CoreViews(self.mk_request())
         indexes = map(
             lambda path: '%s-master' % slugify(parse_repo_name(path)),
             [workspace1.working_dir, workspace2.working_dir])
