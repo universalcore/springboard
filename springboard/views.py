@@ -8,7 +8,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 
 from springboard.utils import (
-    parse_repo_name, ga_context, config_list, config_dict)
+    parse_repo_name, ga_context, config_list)
 
 from unicore.content.models import Category, Page
 from unicore.distribute.tasks import fastforward
@@ -45,12 +45,12 @@ class SpringboardViews(object):
         self.all_categories = SM(Category, **search_config).es(
             **self.es_settings)
         self.all_pages = SM(Page, **search_config).es(**self.es_settings)
-        self.available_languages = config_dict(
+        self.available_languages = config_list(
             self.settings.get('available_languages', ''))
-        self.featured_languages = config_dict(
+        self.featured_languages = config_list(
             self.settings.get('featured_languages', ''))
-        self.display_languages = self.available_languages.copy()
-        self.display_languages.update(self.featured_languages)
+        self.display_languages = list(
+            set(self.featured_languages) - set([self.language]))
 
     def context(self, **context):
         defaults = {
@@ -125,16 +125,3 @@ class SpringboardViews(object):
             response.set_cookie('_LOCALE_', value=language, max_age=31536000)
 
         return HTTPFound(location='/', headers=response.headers)
-
-    def get_display_languages(self):
-        to_display = [
-            code for code in
-            self.featured_languages or self.available_languages[:2]
-        ]
-
-        featured_and_current = [self.language] + sorted(list(
-            set(to_display) - set([self.language])),
-            key=lambda tup: tup[1].lower())
-        return [
-            (code)
-            for code in featured_and_current]
