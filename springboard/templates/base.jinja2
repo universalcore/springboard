@@ -14,16 +14,16 @@
     <div id="header">
         <div class="lang">
             <div>
-                {% for lang_code, lang_name in view.get_display_languages() %}
+                {% for lang_code, lang_name in display_languages %}
                 <li>
-                    <a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
+                    <a href="{{'locale_matched'|route_url(language=lang_code)"}}>{{lang_name}}</a>
                 </li>
                 {% endfor %}
-                    <li><a href="/locale/change/">&gt;&gt;</a></li>
+                    <li><a href="{{'locale_change'|route_url}}">&gt;&gt;</a></li>
                 </ul>
           </div>
         </div>
-        <div class="logo"><a href="/" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
+        <div class="logo"><a href="{{'home'|route_url}}" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
         <div class="clr"></div>
         {% include 'auth.jinja2' %}
     </div>
