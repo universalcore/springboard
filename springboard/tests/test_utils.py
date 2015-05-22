@@ -24,15 +24,15 @@ class TestUtils(TestCase):
         self.assertEqual(['1', '2', '3'], config_list('1\n2\n3\n'))
         self.assertEqual([], config_list(''))
 
-    def tst_config_dict(self):
+    def test_config_dict(self):
         self.assertEqual({
             'a': '1',
             'b': '2',
             'c': '3',
-        }, 'a=1\nb=2\nc=3')
+        }, config_dict('a=1\nb=2\nc=3'))
         self.assertEqual({
-            'a': '1',
-            'b': '2',
-            'c': '3',
-        }, 'a=1\nb=2\nc=3\n')
-        self.assertEqual({}, '')
+            'foo': 'bar',
+            'gum': 'tree',
+            'elastic': 'search',
+        }, config_dict('foo=bar\ngum=tree\nelastic=search\n'))
+        self.assertEqual({}, config_dict(''))
