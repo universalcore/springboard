@@ -15,7 +15,7 @@ class TestLanguages(SpringboardTestCase):
 
         self.config = testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_url': self.workspace.working_dir,
+            'unicore.content_repo_urls': self.workspace.working_dir,
             'available_languages': languages,
             'featured_languages': featured_langs
         })
