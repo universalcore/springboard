@@ -8,6 +8,9 @@ from markdown import markdown
 
 from pyramid.threadlocal import get_current_registry
 
+from babel import Locale
+from pycountry import languages
+
 
 @contextfilter
 def format_date_filter(ctx, timestamp, format):
@@ -32,3 +35,10 @@ def markdown_filter(ctx, content):
     if not content:
         return content
     return markdown(content)
+
+
+@contextfilter
+def display_language_name_filter(ctx, locale):
+    language_code, _, country_code = locale.partition('_')
+    term_code = languages.get(bibliographic=language_code).terminology
+    return Locale.parse(term_code).language_name

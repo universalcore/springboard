@@ -1,4 +1,4 @@
-elastic-git>=1.0.2
+elastic-git>=1.1.0
 unicore.content
 unicore.google
 unicore.distribute
@@ -14,3 +14,5 @@ libthumbor
 Markdown
 python-slugify
 cookiecutter
+pycountry==1.10
+babel

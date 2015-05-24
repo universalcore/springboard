@@ -70,7 +70,7 @@ class SpringboardTestCase(TestCase):
 
         settings_defaults = {
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_url': workspace.working_dir,
+            'unicore.content_repo_urls': workspace.working_dir,
         }
         settings_defaults.update(settings)
 
