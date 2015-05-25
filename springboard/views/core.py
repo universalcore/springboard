@@ -5,11 +5,10 @@ from pyramid.view import notfound_view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 
-from springboard.utils import ga_context
+from springboard.utils import ga_context, EGPaginator
 from springboard.views.base import SpringboardViews
 
 from unicore.distribute.tasks import fastforward
-from utils import EGPaginator
 
 
 ONE_YEAR = 31536000
@@ -37,17 +36,17 @@ class CoreViews(SpringboardViews):
         query = self.request.GET.get('q')
         p = int(self.request.GET.get('p', 0))
 
-        empty_defaults = {
-            'paginator': [],
-            'query': query,
-            'p': p,
-        }
+        empty_defaults = self.context(
+            paginator=[],
+            query=query,
+            p=p,
+        )
 
         # handle query exception
         if not query:
             return empty_defaults
 
-        all_results = self.workspace.S(Page).query(
+        all_results = self.all_pages.query(
             content__query_string=query).filter(language=self.language)
 
         # no results found
@@ -64,11 +63,11 @@ class CoreViews(SpringboardViews):
         p = p if p < total_pages else total_pages - 1
         paginator = EGPaginator(all_results, p)
 
-        return {
-            'paginator': paginator,
-            'query': query,
-            'p': p,
-        }
+        return self.context(
+            paginator=paginator,
+            query=query,
+            p=p,
+        )
 
     @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='page',
