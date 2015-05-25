@@ -9,6 +9,7 @@ from springboard.tools.commands import SyncDataTool
 from springboard.tools.commands import BootstrapTool
 from springboard.tools.commands import StartAppTool
 from springboard.tools.commands import ImportContentTool
+from springboard.tools.commands import ConnectTool
 
 
 def get_parser():  # pragma: no cover
@@ -23,6 +24,7 @@ def get_parser():  # pragma: no cover
     add_command(subparsers, SyncDataTool)
     add_command(subparsers, StartAppTool)
     add_command(subparsers, ImportContentTool)
+    add_command(subparsers, ConnectTool)
     return parser
 
 
