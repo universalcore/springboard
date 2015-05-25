@@ -2,7 +2,7 @@ import os
 
 from elasticgit.search import SM
 
-from springboard.utils import parse_repo_name
+from springboard.utils import parse_repo_name, config_list
 
 from unicore.content.models import Category, Page
 
@@ -23,7 +23,7 @@ class SpringboardViews(object):
         repo_dir = self.settings.get('unicore.repos_dir', 'repos')
         repo_names = map(
             lambda repo_url: parse_repo_name(repo_url),
-            self.settings['unicore.content_repo_urls'].strip().split('\n'))
+            config_list(self.settings['unicore.content_repo_urls']))
         self.all_repo_paths = map(
             lambda repo_name: os.path.join(repo_dir, repo_name),
             repo_names)
@@ -38,10 +38,19 @@ class SpringboardViews(object):
         self.all_categories = SM(Category, **search_config).es(
             **self.es_settings)
         self.all_pages = SM(Page, **search_config).es(**self.es_settings)
+        self.available_languages = config_list(
+            self.settings.get('available_languages', ''))
+        self.featured_languages = config_list(
+            self.settings.get('featured_languages', ''))
+        self.display_languages = list(
+            set(self.featured_languages) - set([self.language]))
 
     def context(self, **context):
         defaults = {
             'user': self.request.user,
+            'available_languages': self.available_languages,
+            'featured_languages': self.featured_languages,
+            'display_languages': self.display_languages,
             'language': self.language,
             'all_categories': self.all_categories,
             'all_pages': self.all_pages,

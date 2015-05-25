@@ -2,11 +2,16 @@ import os
 
 from pyramid.view import view_config
 from pyramid.view import notfound_view_config
+from pyramid.httpexceptions import HTTPFound
+from pyramid.response import Response
 
 from springboard.utils import ga_context
 from springboard.views.base import SpringboardViews
 
 from unicore.distribute.tasks import fastforward
+
+
+ONE_YEAR = 31536000
 
 
 class CoreViews(SpringboardViews):
@@ -52,4 +57,22 @@ class CoreViews(SpringboardViews):
     @notfound_view_config(renderer='springboard:templates/404.jinja2')
     def notfound(self):
         self.request.response.status = 404
-        return {}
+        return self.context()
+
+    @view_config(
+        route_name='locale_change',
+        renderer='springboard:templates/locale_change.jinja2')
+    def locale_change(self):
+        return self.context()
+
+    @view_config(route_name='locale')
+    @view_config(route_name='locale_matched')
+    def set_locale_cookie(self):
+        response = Response()
+        language = self.request.matchdict.get('language') or \
+            self.request.GET.get('language')
+
+        if language:
+            response.set_cookie('_LOCALE_', value=language, max_age=ONE_YEAR)
+
+        return HTTPFound(location='/', headers=response.headers)
