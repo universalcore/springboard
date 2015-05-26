@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="{{'springboard:static/img/favicon.ico'|static_url}}" />
+    <title>{{ title|default("Skeleton / Universal Core") }}</title>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+    <meta name="description" content="{{ description|default("") }}" />
+    <meta name="keywords" content="{{ keywords|default("") }}" />
+    <link href="{{'springboard:static/css/style.css'|static_url}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="header">
+        <div class="lang">
+            <div>
+                <li>
+                    <a>{{language|display_language_name}}</a>
+                </li>
+                {% for lang_code in display_languages %}
+                <li>
+                    <a href="{{'locale_matched'|route_url(language=lang_code)}}">{{lang_code|display_language_name}}</a>
+                </li>
+                {% endfor %}
+                    <li><a href="{{'locale_change'|route_url}}">&gt;&gt;</a></li>
+                </ul>
+          </div>
+        </div>
+        <div class="logo"><a href="{{'home'|route_url}}" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
+        <div class="clr"></div>
+        {% include 'auth.jinja2' %}
+    </div>
+    <div class="push"></div><!--/PUSH-->
+    <div id="submenu">
+        <a href="/">{{ gettext("Home") }}</a>
+        {% for nav in main_navigation_items %}
+            <span>
+            l <a href="{{'category'|route_url(uuid=nav.uuid)}}">{{nav.title}}</a>
+            </span>
+        {% endfor %}
+    </div>
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+
+<ul>
+{% for lang_code in available_languages %}
+	<li>
+		<a href="{{'locale_matched'|route_url(language=lang_code) }}">{{lang_code|display_language_name}}</a>
+	</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
