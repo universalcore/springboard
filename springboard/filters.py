@@ -12,6 +12,10 @@ from babel import Locale
 from pycountry import languages
 
 
+# known right-to-left language codes
+KNOWN_RTL_LANGUAGES = {"urd", "ara", "arc", "per", "heb", "kur", "yid"}
+
+
 @contextfilter
 def format_date_filter(ctx, timestamp, format):
     if isinstance(timestamp, basestring):
@@ -42,3 +46,10 @@ def display_language_name_filter(ctx, locale):
     language_code, _, country_code = locale.partition('_')
     term_code = languages.get(bibliographic=language_code).terminology
     return Locale.parse(term_code).language_name
+
+
+def language_direction_filter(locale):
+    language_code, _, country_code = locale.partition('_')
+    if language_code in KNOWN_RTL_LANGUAGES:
+        return 'rtl'
+    return 'ltr'
