@@ -6,7 +6,8 @@ from libthumbor import CryptoURL
 
 from springboard.tests import SpringboardTestCase
 from springboard.filters import (
-    format_date_filter, thumbor_filter, markdown_filter)
+    format_date_filter, thumbor_filter, markdown_filter,
+    language_direction_filter)
 
 
 class TestFilters(SpringboardTestCase):
@@ -53,3 +54,7 @@ class TestFilters(SpringboardTestCase):
     def test_markdown_filter_none(self):
         self.assertEqual(markdown_filter({}, None), None)
         self.assertEqual(markdown_filter({}, ''), '')
+
+    def test_language_direction_filter(self):
+        self.assertEqual(language_direction_filter('eng_GB'), 'ltr')
+        self.assertEqual(language_direction_filter('urd_PK'), 'rtl')
