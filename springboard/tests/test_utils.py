@@ -1,7 +1,14 @@
 from unittest import TestCase
 
+from mock import patch, Mock
+
+from unicore.content.models import Category
+from elasticgit.search import SM
+
+from springboard.tests.base import SpringboardTestCase
 from springboard.utils import (
-    parse_repo_name, config_list, config_dict, Paginator)
+    parse_repo_name, config_list, config_dict, Paginator,
+    EGPaginator)
 
 
 class TestUtils(TestCase):
@@ -41,8 +48,11 @@ class TestUtils(TestCase):
 
 class TestPaginator(TestCase):
 
+    def mk_paginator(self, results, page, **kwargs):
+        return Paginator(results, page, **kwargs)
+
     def test_first_page(self):
-        paginator = Paginator(range(100), 0)
+        paginator = self.mk_paginator(range(100), 0)
         self.assertTrue(paginator.has_next_page())
         self.assertFalse(paginator.has_previous_page())
         self.assertEqual(paginator.total_pages(), 10)
@@ -53,7 +63,7 @@ class TestPaginator(TestCase):
         self.assertEqual(paginator.page_numbers_right(), [1, 2, 3, 4])
 
     def test_last_page(self):
-        paginator = Paginator(range(100), 9)
+        paginator = self.mk_paginator(range(100), 9)
         self.assertFalse(paginator.has_next_page())
         self.assertTrue(paginator.has_previous_page())
         self.assertEqual(paginator.total_pages(), 10)
@@ -64,7 +74,7 @@ class TestPaginator(TestCase):
         self.assertEqual(paginator.page_numbers_right(), [])
 
     def test_middle_page(self):
-        paginator = Paginator(range(100), 4)
+        paginator = self.mk_paginator(range(100), 4)
         self.assertTrue(paginator.has_next_page())
         self.assertTrue(paginator.has_previous_page())
         self.assertEqual(paginator.total_pages(), 10)
@@ -75,14 +85,14 @@ class TestPaginator(TestCase):
         self.assertEqual(paginator.page_numbers_right(), [5, 6])
 
     def test_show_start(self):
-        paginator = Paginator(range(100), 3)
+        paginator = self.mk_paginator(range(100), 3)
         self.assertTrue(paginator.show_start())
         self.assertFalse(paginator.needs_start_ellipsis())
         self.assertEqual(paginator.page_numbers_left(), [1, 2])
         self.assertEqual(paginator.page_numbers_right(), [4, 5])
 
     def test_show_end(self):
-        paginator = Paginator(range(100), 7)
+        paginator = self.mk_paginator(range(100), 7)
         self.assertTrue(paginator.show_start())
         self.assertTrue(paginator.needs_start_ellipsis())
         self.assertEqual(paginator.page_numbers(), [5, 6, 7, 8, 9])
@@ -92,7 +102,7 @@ class TestPaginator(TestCase):
         self.assertFalse(paginator.needs_end_ellipsis())
 
     def test_show_end_not_ellipsis(self):
-        paginator = Paginator(range(100), 6)
+        paginator = self.mk_paginator(range(100), 6)
         self.assertTrue(paginator.show_start())
         self.assertTrue(paginator.needs_start_ellipsis())
         self.assertEqual(paginator.page_numbers(), [4, 5, 6, 7, 8])
@@ -102,7 +112,7 @@ class TestPaginator(TestCase):
         self.assertFalse(paginator.needs_end_ellipsis())
 
     def test_small_result_set(self):
-        paginator = Paginator(range(39), 0)
+        paginator = self.mk_paginator(range(39), 0)
         self.assertFalse(paginator.show_start())
         self.assertFalse(paginator.needs_start_ellipsis())
         self.assertFalse(paginator.show_end())
@@ -111,9 +121,32 @@ class TestPaginator(TestCase):
         self.assertEqual(paginator.page_numbers_right(), [1, 2, 3])
 
     def test_large_end_result_set(self):
-        paginator = Paginator(range(133), 12)
+        paginator = self.mk_paginator(range(133), 12)
         self.assertEqual(paginator.page_numbers(), [9, 10, 11, 12, 13])
         self.assertEqual(paginator.page_numbers_left(), [9, 10, 11])
         self.assertEqual(paginator.page_numbers_right(), [13])
         self.assertFalse(paginator.show_end())
         self.assertFalse(paginator.needs_end_ellipsis())
+
+
+class TestEGPaginator(TestPaginator, SpringboardTestCase):
+
+    def mk_paginator(self, results, page, **kwargs):
+        workspace = self.mk_workspace()
+        patch_count = patch.object(
+            SM, 'count', return_value=len(results))
+        patch_count.start()
+        self.addCleanup(patch_count.stop)
+        results = SM(Category, in_=[workspace.working_dir])
+        return EGPaginator(results, page, **kwargs)
+
+    def test_cache_total_count(self):
+        paginator = self.mk_paginator(range(10), 0)
+        self.assertEqual(paginator.total_count(), 10)
+        self.assertEqual(paginator.total_count(), 10)
+        self.assertEqual(paginator.results.count.call_count, 1)
+
+    def test_get_page(self):
+        paginator = self.mk_paginator(range(10), 0)
+        page = paginator.get_page()
+        self.assertIsInstance(page, SM)
