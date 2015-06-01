@@ -11,6 +11,8 @@ from pyramid.threadlocal import get_current_registry
 from babel import Locale
 from pycountry import languages
 
+from springboard.utils import Paginator
+
 
 # known right-to-left language codes
 KNOWN_RTL_LANGUAGES = {"urd", "ara", "arc", "per", "heb", "kur", "yid"}
@@ -53,3 +55,7 @@ def language_direction_filter(locale):
     if language_code in KNOWN_RTL_LANGUAGES:
         return 'rtl'
     return 'ltr'
+
+
+def paginate_filter(results, page, results_per_page=10, slider_value=5):
+    return Paginator(results, page, results_per_page, slider_value)
