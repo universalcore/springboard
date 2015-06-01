@@ -3,6 +3,8 @@ from functools import wraps
 from urlparse import urlparse
 import math
 
+from elasticutils import S
+
 
 def parse_repo_name(repo_url):
     pr = urlparse(repo_url)
@@ -80,6 +82,15 @@ class Paginator(object):
     """
     A thing that helps us page through result sets
 
+    :param iterable results:
+        The iterable of objects to paginate.
+    :param int page:
+        The page number, zero-based.
+    :param int results_per_page:
+        The number of objects in each page.
+    :param int slider_value:
+        The number of page numbers to display, excluding the current page.
+
     """
 
     def __init__(self, results, page, results_per_page=10, slider_value=5):
@@ -90,6 +101,8 @@ class Paginator(object):
         self.buffer_value = self.slider_value / 2
 
     def total_count(self):
+        if isinstance(self.results, S):
+            return self.results.count()
         return len(self.results)
 
     def get_page(self):
@@ -157,16 +170,3 @@ class Paginator(object):
         if not any(page_numbers):
             return False
         return page_numbers[-1] < self.total_pages() - 1
-
-
-class EGPaginator(Paginator):
-
-    def __init__(self, *args, **kwargs):
-        super(EGPaginator, self).__init__(*args, **kwargs)
-        # caches results.count() value
-        self._total_count = None
-
-    def total_count(self):
-        if self._total_count is None:
-            self._total_count = self.results.count()
-        return self._total_count

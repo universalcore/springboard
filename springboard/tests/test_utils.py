@@ -1,14 +1,13 @@
 from unittest import TestCase
 
-from mock import patch, Mock
+from mock import patch
 
 from unicore.content.models import Category
 from elasticgit.search import SM
 
 from springboard.tests.base import SpringboardTestCase
 from springboard.utils import (
-    parse_repo_name, config_list, config_dict, Paginator,
-    EGPaginator)
+    parse_repo_name, config_list, config_dict, Paginator)
 
 
 class TestUtils(TestCase):
@@ -129,7 +128,7 @@ class TestPaginator(TestCase):
         self.assertFalse(paginator.needs_end_ellipsis())
 
 
-class TestEGPaginator(TestPaginator, SpringboardTestCase):
+class TestPaginatorWithESResults(TestPaginator, SpringboardTestCase):
 
     def mk_paginator(self, results, page, **kwargs):
         workspace = self.mk_workspace()
@@ -138,13 +137,7 @@ class TestEGPaginator(TestPaginator, SpringboardTestCase):
         patch_count.start()
         self.addCleanup(patch_count.stop)
         results = SM(Category, in_=[workspace.working_dir])
-        return EGPaginator(results, page, **kwargs)
-
-    def test_cache_total_count(self):
-        paginator = self.mk_paginator(range(10), 0)
-        self.assertEqual(paginator.total_count(), 10)
-        self.assertEqual(paginator.total_count(), 10)
-        self.assertEqual(paginator.results.count.call_count, 1)
+        return Paginator(results, page, **kwargs)
 
     def test_get_page(self):
         paginator = self.mk_paginator(range(10), 0)
