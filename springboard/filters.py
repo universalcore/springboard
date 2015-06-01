@@ -57,5 +57,5 @@ def language_direction_filter(locale):
     return 'ltr'
 
 
-def paginate_filter(results, page, results_per_page=None, slider_value=None):
+def paginate_filter(results, page, results_per_page=10, slider_value=5):
     return Paginator(results, page, results_per_page, slider_value)
