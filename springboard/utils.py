@@ -3,6 +3,8 @@ from functools import wraps
 from urlparse import urlparse
 import math
 
+from elasticutils import S
+
 
 def parse_repo_name(repo_url):
     pr = urlparse(repo_url)
@@ -77,8 +79,19 @@ def config_dict(data):
 
 
 class Paginator(object):
+    """
+    A thing that helps us page through result sets
 
-    """A thing that helps us page through result sets"""
+    :param iterable results:
+        The iterable of objects to paginate.
+    :param int page:
+        The page number, zero-based.
+    :param int results_per_page:
+        The number of objects in each page.
+    :param int slider_value:
+        The number of page numbers to display, excluding the current page.
+
+    """
 
     def __init__(self, results, page, results_per_page=10, slider_value=5):
         self.results = results
@@ -88,6 +101,8 @@ class Paginator(object):
         self.buffer_value = self.slider_value / 2
 
     def total_count(self):
+        if isinstance(self.results, S):
+            return self.results.count()
         return len(self.results)
 
     def get_page(self):
@@ -155,33 +170,3 @@ class Paginator(object):
         if not any(page_numbers):
             return False
         return page_numbers[-1] < self.total_pages() - 1
-
-
-class EGPaginator(Paginator):
-
-    def total_count(self):
-        return self.results.count()
-
-    def get_page(self):
-        return to_eg_objects(super(EGPaginator, self).get_page())
-
-
-class ResultGenerator(object):
-
-    def __init__(self, es_results):
-        self.es_results = es_results
-
-    def __iter__(self):
-        return (obj.to_object() for obj in self.es_results)
-
-    def __len__(self):
-        return self.es_results.__len__()
-
-    def __getitem__(self, k):
-        if isinstance(k, slice):
-            return ResultGenerator(self.es_results.__getitem__(k))
-        return self.es_results.__getitem__(k).to_object()
-
-
-def to_eg_objects(es_results):
-    return ResultGenerator(es_results)

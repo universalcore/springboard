@@ -33,7 +33,8 @@ class TestViews(SpringboardTestCase):
         self.assertEqual(set(context.keys()),
                          set(['user', 'language', 'all_categories',
                               'all_pages', 'featured_languages',
-                              'available_languages', 'display_languages']))
+                              'available_languages', 'display_languages',
+                              'all_localisations']))
 
     def test_category(self):
         [category] = self.mk_categories(self.workspace, count=1)

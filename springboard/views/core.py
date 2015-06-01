@@ -5,7 +5,7 @@ from pyramid.view import notfound_view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 
-from springboard.utils import ga_context, EGPaginator
+from springboard.utils import ga_context, Paginator
 from springboard.views.base import SpringboardViews
 
 from unicore.distribute.tasks import fastforward
@@ -53,7 +53,7 @@ class CoreViews(SpringboardViews):
         if all_results.count() == 0:
             return empty_defaults
 
-        paginator = EGPaginator(all_results, p)
+        paginator = Paginator(all_results, p)
 
         # requested page number is out of range
         total_pages = paginator.total_pages()
@@ -61,7 +61,7 @@ class CoreViews(SpringboardViews):
         p = p if p >= 0 else 0
         # sets the roof to `total_pages -1`
         p = p if p < total_pages else total_pages - 1
-        paginator = EGPaginator(all_results, p)
+        paginator = Paginator(all_results, p)
 
         return self.context(
             paginator=paginator,
