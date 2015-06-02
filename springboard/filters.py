@@ -11,6 +11,12 @@ from pyramid.threadlocal import get_current_registry
 from babel import Locale
 from pycountry import languages
 
+from springboard.utils import Paginator
+
+
+# known right-to-left language codes
+KNOWN_RTL_LANGUAGES = {"urd", "ara", "arc", "per", "heb", "kur", "yid"}
+
 
 @contextfilter
 def format_date_filter(ctx, timestamp, format):
@@ -42,3 +48,14 @@ def display_language_name_filter(ctx, locale):
     language_code, _, country_code = locale.partition('_')
     term_code = languages.get(bibliographic=language_code).terminology
     return Locale.parse(term_code).language_name
+
+
+def language_direction_filter(locale):
+    language_code, _, country_code = locale.partition('_')
+    if language_code in KNOWN_RTL_LANGUAGES:
+        return 'rtl'
+    return 'ltr'
+
+
+def paginate_filter(results, page, results_per_page=10, slider_value=5):
+    return Paginator(results, page, results_per_page, slider_value)
