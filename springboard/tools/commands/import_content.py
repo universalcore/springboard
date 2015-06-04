@@ -3,7 +3,7 @@ from ConfigParser import ConfigParser
 
 import yaml
 
-from springboard.utils import parse_repo_name
+from springboard.utils import parse_repo_name, config_list
 from springboard.tools.commands.bootstrap import BootstrapTool
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
@@ -76,10 +76,10 @@ class ImportContentTool(BootstrapTool):
         if not cp.has_section(ini_section):
             cp.add_section(ini_section)
 
-        existing_repo_urls = (cp.get(ini_section, config_key)
-                              if cp.has_option(ini_section, config_key)
-                              else '')
-        existing_repo_urls = existing_repo_urls.strip().split('\n')
+        existing_repo_urls = config_list(
+            cp.get(ini_section, config_key)
+            if cp.has_option(ini_section, config_key)
+            else '')
 
         if repo_url not in existing_repo_urls:
             cp.set(ini_section, config_key,
