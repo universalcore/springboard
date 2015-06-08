@@ -37,25 +37,13 @@ class SpringboardViews(object):
         }
         self.all_categories = SM(Category, **search_config).es(
             **self.es_settings)
-        print('----------------------------------------------------******')
-        print(self.all_categories)
-        print('----------------------------------------------------')
         self.all_pages = SM(Page, **search_config).es(**self.es_settings)
-<<<<<<< Updated upstream
         self.all_localisations = SM(Localisation, **search_config).es(
             **self.es_settings)
-
-=======
-        print('----------------------------------------------------')
-        print(self.all_pages)
-        print('----------------------------------------------------******')
->>>>>>> Stashed changes
         self.available_languages = config_list(
             self.settings.get('available_languages', ''))
-        print(self.available_languages)
         self.featured_languages = config_list(
             self.settings.get('featured_languages', ''))
-        print(self.featured_languages)
         self.display_languages = list(
             set(self.featured_languages) - set([self.language]))
 

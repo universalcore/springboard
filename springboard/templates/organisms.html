@@ -1,7 +1,7 @@
 {% import 'molecules.html' as molecules %}
 {% import 'atoms.html' as atoms %}
 
-{% macro list_of_returned_articles(paginator, view) -%}
+{% macro list_of_returned_articles(paginator, all_categories) -%}
 <ul>
 	{% for result in paginator.get_page() %}
 		<li>
