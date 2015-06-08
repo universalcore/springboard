@@ -66,4 +66,3 @@ def get_category_title_filter(ctx, primary_category_uuid, all_categories):
     for category in all_categories:
         if primary_category_uuid == category.uuid:
             return category.title
-    return ''
