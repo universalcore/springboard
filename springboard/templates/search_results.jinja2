@@ -14,7 +14,7 @@
 		{{molecules.page_number_navigator(view, paginator, p, query)}}
 	{% endif %}
 
-	{{organisms.list_of_returned_articles(paginator, view)}}
+	{{organisms.list_of_returned_articles(paginator, relevant_categories)}}
 
 {% else %}
 	{{molecules.message_for_no_results(query)}}

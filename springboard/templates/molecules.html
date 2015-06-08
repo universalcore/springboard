@@ -115,9 +115,9 @@
   {% endif %}
 {%- endmacro %}
 
-{% macro article_summary(result, view) -%}
-  {% if result.primary_category  %}
-      <p>{{view.get_category(result.primary_category).title}}</p>
-      {% endif %}
-      <a href={{view.request.route_url('page', uuid=result.uuid)}}>{{result.title}} ... Read More &gt;</a>
+{% macro article_summary(result, all_categories) -%}
+{% if result.primary_category in all_categories %}
+  <p>{{(all_categories.filter(uuid=uuid)).title}}</p>
+{% endif %}
+  <a href="{{'page'|route_url(uuid=result.uuid)}}">{{result.title}} ... Read More &gt;</a>
 {%- endmacro %}

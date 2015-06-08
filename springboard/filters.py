@@ -59,3 +59,9 @@ def language_direction_filter(locale):
 
 def paginate_filter(results, page, results_per_page=10, slider_value=5):
     return Paginator(results, page, results_per_page, slider_value)
+
+
+@contextfilter
+def get_category_object_filter(ctx, page):
+    [category] = ctx['all_categories'].filter(uuid=page.primary_category)
+    return category.to_object()

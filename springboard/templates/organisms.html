@@ -5,7 +5,7 @@
 <ul>
 	{% for result in paginator.get_page() %}
 		<li>
-			{{molecules.article_summary(result, view )}}
+			{{molecules.article_summary(result, all_categories)}}
 		</li>
 	{% endfor %}
 </ul>

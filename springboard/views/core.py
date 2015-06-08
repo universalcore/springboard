@@ -63,7 +63,11 @@ class CoreViews(SpringboardViews):
         p = p if p < total_pages else total_pages - 1
         paginator = Paginator(all_results, p)
 
+        relevant_categories = self.all_categories.query().filter(
+            language=self.language)
+
         return self.context(
+            relevant_categories=relevant_categories,
             paginator=paginator,
             query=query,
             p=p,
