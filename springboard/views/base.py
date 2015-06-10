@@ -40,7 +40,6 @@ class SpringboardViews(object):
         self.all_pages = SM(Page, **search_config).es(**self.es_settings)
         self.all_localisations = SM(Localisation, **search_config).es(
             **self.es_settings)
-
         self.available_languages = config_list(
             self.settings.get('available_languages', ''))
         self.featured_languages = config_list(

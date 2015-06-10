@@ -59,3 +59,10 @@ def language_direction_filter(locale):
 
 def paginate_filter(results, page, results_per_page=10, slider_value=5):
     return Paginator(results, page, results_per_page, slider_value)
+
+
+@contextfilter
+def get_category_title_filter(ctx, primary_category_uuid, all_categories):
+    for category in all_categories:
+        if primary_category_uuid == category.uuid:
+            return category.title
