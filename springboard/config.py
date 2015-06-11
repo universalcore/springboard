@@ -4,6 +4,7 @@ def includeme(config):
     config.add_route('home', '/')
     config.add_route('category', '/category/{uuid}/')
     config.add_route('page', '/page/{uuid}/')
+    config.add_route('search', '/search/')
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
