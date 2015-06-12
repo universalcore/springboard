@@ -292,17 +292,22 @@ class TestImportContentTool(SpringboardToolTestCase):
                  ini_config=ini_config,
                  ini_section='app:main',
                  update_config=True,
-                 repo_name=None)
+                 repo_name=None,
+                 index_prefix=None)
 
         cp = ConfigParser()
         cp.read(ini_config)
         self.assertEqual(
             cp.get('app:main', 'unicore.content_repos').strip(),
-            self.workspace.working_dir)
+            '%s = %s' % (os.path.basename(self.workspace.working_dir),
+                         self.workspace.index_prefix))
 
         with open(yaml_config, 'r') as fp:
             data = yaml.safe_load(fp)
             repo_name = parse_repo_name(self.workspace.working_dir)
             self.assertEqual(data['repositories'], {
-                repo_name: self.workspace.working_dir
+                repo_name: {
+                    'url': self.workspace.working_dir,
+                    'index_prefix': self.workspace.index_prefix
+                }
             })
