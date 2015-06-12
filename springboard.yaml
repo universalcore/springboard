@@ -1,7 +1,11 @@
 # List of content repositories to be working with
 repositories:
-  unicore-cms-content-gem-tanzania: 'https://github.com/universalcore/unicore-cms-content-gem-tanzania'
-  unicore-cms-content-mama-tz-qa: 'https://github.com/universalcore/unicore-cms-content-mama-tz-qa'
+  unicore-cms-content-gem-tanzania:
+    url: 'https://github.com/universalcore/unicore-cms-content-gem-tanzania'
+    index_prefix: 'gem-tz'
+  unicore-cms-content-mama-tz-qa:
+    url: 'https://github.com/universalcore/unicore-cms-content-mama-tz-qa'
+    index_prefix: 'mama-tz'
 
 # List of models to be loaded and their mappings, if any.
 models:
