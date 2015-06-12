@@ -18,26 +18,30 @@ class BootstrapTool(CloneRepoTool,
 
     def run(self, config, verbose, clobber, repo_dir):
         config_file, config_data = config
-        repos = [self.clone_repo(repo_name=repo_name,
-                                 repo_url=repo_url,
-                                 repo_dir=repo_dir,
-                                 clobber=clobber,
-                                 verbose=verbose)
-                 for repo_name, repo_url
-                 in config_data['repositories'].items()]
-        for workdir, _ in repos:
-            self.bootstrap(workdir,
+        all_repos = self.repositories(config_data, repo_dir)
+
+        for repo_data in all_repos:
+            self.clone_repo(repo_data['working_dir'],
+                            repo_data['url'],
+                            clobber=clobber,
+                            verbose=verbose)
+
+        for repo_data in all_repos:
+            self.bootstrap(repo_data['working_dir'],
+                           repo_data['index_prefix'],
                            models=config_data.get('models', {}).items(),
                            clobber=clobber, verbose=verbose)
 
-    def bootstrap(self, workdir, models=(), clobber=False, verbose=False):
+    def bootstrap(self, workdir, index_prefix, models=(),
+                  clobber=False, verbose=False):
         index_created = self.create_index(workdir,
+                                          index_prefix,
                                           clobber=clobber,
                                           verbose=verbose)
         for model_name, mapping in models:
             model_class = load_class(model_name)
             if index_created:
-                self.create_mapping(workdir, model_class, mapping,
-                                    verbose=verbose)
-            self.sync_data(workdir, model_class,
+                self.create_mapping(workdir, index_prefix, model_class,
+                                    mapping, verbose=verbose)
+            self.sync_data(workdir, index_prefix, model_class,
                            verbose=verbose, clobber=clobber)

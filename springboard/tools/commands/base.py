@@ -1,5 +1,8 @@
+import os
 import sys
 import yaml
+
+from slugify import slugify
 
 from elasticgit.commands.base import ToolCommand, CommandArgument
 
@@ -46,3 +49,21 @@ class SpringboardToolCommand(ToolCommand):
     def emit(self, line):
         if self.verbose:
             self.stdout.write('%s\n' % (line,))
+
+    def iter_repositories(self, config_data, repo_dir, *repo_names):
+        if not repo_names:
+            repo_names = config_data['repositories'].keys()
+
+        for repo_name in repo_names:
+            repo_data = config_data['repositories'][repo_name]
+            yield {
+                'name': repo_name,
+                'working_dir': os.path.join(repo_dir, repo_name),
+                'url': repo_data['url'],
+                'index_prefix': repo_data.get(
+                    'index_prefix', slugify(repo_name))
+            }
+
+    def repositories(self, config_data, repo_dir, *repo_names):
+        return [data for data
+                in self.iter_repositories(config_data, repo_dir, *repo_names)]

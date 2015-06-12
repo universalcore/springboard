@@ -20,21 +20,18 @@ class CloneRepoTool(SpringboardToolCommand):
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
         config_file, config_data = config
-        repo_names = ([repo_name]
-                      if repo_name
-                      else config_data['repositories'].keys())
-        repos = [self.clone_repo(name,
-                                 config_data['repositories'][name],
-                                 repo_dir=repo_dir,
+        repo_names = [repo_name] if repo_name else []
+        repos = [self.clone_repo(repo_data['working_dir'],
+                                 repo_data['url'],
                                  clobber=clobber,
                                  verbose=verbose)
-                 for name in repo_names]
+                 for repo_data in self.iter_repositories(config_data,
+                                                         repo_dir,
+                                                         *repo_names)]
         return repos
 
-    def clone_repo(self, repo_name, repo_url,
-                   repo_dir='repos', clobber=False, verbose=False):
+    def clone_repo(self, workdir, repo_url, clobber=False, verbose=False):
         self.verbose = verbose
-        workdir = os.path.join(repo_dir, repo_name)
         self.emit('Cloning %s to %s.' % (repo_url, workdir))
         if os.path.isdir(workdir) and not clobber:
             self.emit('Destination already exists, skipping.')

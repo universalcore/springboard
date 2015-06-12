@@ -10,6 +10,7 @@ from springboard.utils import parse_repo_name
 from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
     BootstrapTool, ImportContentTool)
+from springboard.tools.commands.base import SpringboardToolCommand
 from springboard.tools.commands.base import YAMLFile
 
 
@@ -22,7 +23,10 @@ class SpringboardToolTestCase(SpringboardTestCase):
         repo_name = self.mk_workspace_name(self.workspace)
         return {
             'repositories': {
-                repo_name: self.workspace.working_dir,
+                repo_name: {
+                    'url': self.workspace.working_dir,
+                    'index_prefix': self.workspace.index_prefix
+                }
             }
         }
 
@@ -38,6 +42,42 @@ class TestYAMLHelper(SpringboardToolTestCase):
         self.assertEqual(
             argparse_type(file_name),
             (file_name, {'foo': 'bar'}))
+
+
+class TestSpringboardTool(SpringboardToolTestCase):
+
+    def test_iter_repositories(self):
+        tool = SpringboardToolCommand()
+        config_data = {
+            'repositories': {
+                'foo_name': {
+                    'url': 'foo_url',
+                    'index_prefix': 'foo_index_prefix'
+                }
+            }
+        }
+        repo_dir = '%s/test_iter_repositories' % (self.working_dir,)
+        repo_data = list(tool.iter_repositories(config_data, repo_dir))
+        self.assertEqual(
+            repo_data,
+            [{
+                'name': 'foo_name',
+                'url': 'foo_url',
+                'index_prefix': 'foo_index_prefix',
+                'working_dir': '%s/%s' % (repo_dir, 'foo_name')
+            }])
+
+        del config_data['repositories']['foo_name']['index_prefix']
+        repo_data = list(tool.iter_repositories(config_data, repo_dir,
+                                                'foo_name'))
+        self.assertEqual(
+            repo_data,
+            [{
+                'name': 'foo_name',
+                'url': 'foo_url',
+                'index_prefix': 'foo-name',
+                'working_dir': '%s/%s' % (repo_dir, 'foo_name')
+            }])
 
 
 class TestCloneRepoTool(SpringboardToolTestCase):
@@ -80,16 +120,6 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         output = tool.stdout.getvalue()
         self.assertTrue(output.endswith('Clobbering existing repository.\n'))
 
-        tool.run(
-            config=('springboard.yaml',
-                    self.mk_workspace_config(self.workspace)),
-            verbose=True,
-            clobber=False,
-            repo_dir='%s/test_clone_repo' % (self.working_dir,),
-            repo_name=None)
-        output = tool.stdout.getvalue()
-        self.assertTrue(output.endswith('already exists, skipping.\n'))
-
 
 class TestCreateIndex(SpringboardToolTestCase):
 
@@ -126,7 +156,8 @@ class TestCreateMapping(SpringboardToolTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
-        CreateIndexTool().create_index(self.workspace.working_dir)
+        CreateIndexTool().create_index(self.workspace.working_dir,
+                                       self.workspace.index_prefix)
 
     def test_create_mapping(self):
         tool = CreateMappingTool()
@@ -159,7 +190,8 @@ class TestSyncData(SpringboardToolTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
-        CreateIndexTool().create_index(self.workspace.working_dir)
+        CreateIndexTool().create_index(self.workspace.working_dir,
+                                       self.workspace.index_prefix)
 
     def test_sync_data(self):
         tool = SyncDataTool()

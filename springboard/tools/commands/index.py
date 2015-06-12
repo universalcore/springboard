@@ -1,8 +1,4 @@
-import os
-
 from elasticgit import EG
-
-from slugify import slugify
 
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
@@ -15,19 +11,26 @@ class CreateIndexTool(SpringboardToolCommand):
         'Create a search index for models stored in elastic-git')
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
-            'repo_name',
-            metavar='repo_name',
-            help='The repository name'),
+            '-rn', '--repo-name',
+            dest='repo_name',
+            help='The name of the repository.'),
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
-        return self.create_index(os.path.join(repo_dir, repo_name),
-                                 verbose=verbose, clobber=clobber)
+        config_file, config_data = config
+        repo_names = [repo_name] if repo_name else []
+        for repo_data in self.iter_repositories(config_data,
+                                                repo_dir,
+                                                *repo_names):
+            return self.create_index(repo_data['working_dir'],
+                                     repo_data['index_prefix'],
+                                     verbose=verbose,
+                                     clobber=clobber)
 
-    def create_index(self, workdir, verbose=False, clobber=False):
+    def create_index(self, workdir, index_prefix,
+                     verbose=False, clobber=False):
         self.verbose = verbose
-        workspace = EG.workspace(
-            workdir, index_prefix=slugify(os.path.basename(workdir)))
+        workspace = EG.workspace(workdir, index_prefix=index_prefix)
         branch = workspace.repo.active_branch
         self.emit('Creating index for %s.' % (branch.name,))
         if workspace.im.index_exists(branch.name) and not clobber:
