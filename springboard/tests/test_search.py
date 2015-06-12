@@ -1,5 +1,6 @@
 from springboard.tests import SpringboardTestCase
 
+
 from pyramid import testing
 from unicore.content.models import Page
 
@@ -10,7 +11,7 @@ class TestSearch(SpringboardTestCase):
         self.workspace = self.mk_workspace()
         settings = {
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repos': self.mk_repo_setting(self.workspace),
+            'unicore.content_repo_urls': self.workspace.working_dir,
             'available_languages': '\n'.join([
                 'eng_GB',
                 'swa_KE',
