@@ -80,6 +80,16 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         output = tool.stdout.getvalue()
         self.assertTrue(output.endswith('Clobbering existing repository.\n'))
 
+        tool.run(
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
+            verbose=True,
+            clobber=False,
+            repo_dir='%s/test_clone_repo' % (self.working_dir,),
+            repo_name=None)
+        output = tool.stdout.getvalue()
+        self.assertTrue(output.endswith('already exists, skipping.\n'))
+
 
 class TestCreateIndex(SpringboardToolTestCase):
 
