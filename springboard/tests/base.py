@@ -59,6 +59,11 @@ class SpringboardTestCase(TestCase):
 
         return workspace
 
+    def mk_repo_setting(self, *workspaces):
+        return '\n'.join(
+            ('%s = %s' % (os.path.basename(ws.working_dir), ws.index_prefix))
+            for ws in workspaces)
+
     def mk_app(self, workspace, ini_config={}, settings={}, main=main,
                extra_environ={}):  # pragma: no cover
         ini_defaults = {
@@ -70,7 +75,7 @@ class SpringboardTestCase(TestCase):
 
         settings_defaults = {
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': workspace.working_dir,
+            'unicore.content_repos': self.mk_repo_setting(workspace),
         }
         settings_defaults.update(settings)
 

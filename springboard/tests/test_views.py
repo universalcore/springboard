@@ -14,7 +14,7 @@ class TestViews(SpringboardTestCase):
         self.workspace = self.mk_workspace()
         self.config = testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': self.workspace.working_dir,
+            'unicore.content_repos': self.mk_repo_setting(self.workspace)
         })
 
     def tearDown(self):
@@ -87,8 +87,8 @@ class TestViews(SpringboardTestCase):
         workspace2 = self.mk_workspace(name='test_multiple_repos-2')
         testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': '\n%s\n%s' % (workspace1.working_dir,
-                                                       workspace2.working_dir),
+            'unicore.content_repos': self.mk_repo_setting(workspace1,
+                                                          workspace2)
         })
         views = CoreViews(self.mk_request())
         indexes = map(
