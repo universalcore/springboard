@@ -1,0 +1,39 @@
+// Facts for Life
+
+$colorFirst: #cce9fc; // baby blue
+$colorSecond: #fff; // white
+$colorThird: #0093ef; // blue
+$colorFourth: #92AFC1; // grey blue
+
+@include links($colorThird);
+
+p{
+	padding: 10px;
+}
+
+//border specifications
+.list-block {
+  li {
+    border-bottom: 1px dotted $colorSecond;
+  }
+}
+
+.list-inline {
+	> li {
+		border-left: solid 3px $colorSecond;
+	}
+}
+
+.border-dotted-blue{
+	border-bottom: 1px dotted $colorThird;
+}
+
+.border-override{
+	li {
+		border-bottom: 1px dotted $colorThird;
+	}
+}
+
+.has-thumbnail{
+	@extend %has-thumb-flip;
+}
