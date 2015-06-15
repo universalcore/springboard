@@ -37,7 +37,7 @@ class SpringboardTestCase(TestCase):
                      auto_destroy=None,
                      author_name='Test Kees',
                      author_email='kees@example.org'):  # pragma: no cover
-        name = name or self.id()
+        name = name or self.id().lower()
         working_dir = working_dir or self.working_dir
         index_prefix = index_prefix or name
         auto_destroy = auto_destroy or self.destroy
@@ -70,7 +70,7 @@ class SpringboardTestCase(TestCase):
 
         settings_defaults = {
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': workspace.working_dir,
+            'unicore.content_repos': workspace.working_dir,
         }
         settings_defaults.update(settings)
 
