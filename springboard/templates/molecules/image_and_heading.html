@@ -1,0 +1,6 @@
+{% macro image_and_heading(view, cat, styling_classes) -%}
+<div class="{{styling_classes}}">
+{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), "" , "" ) }}
+<h3>{{cat.title}}</h3>
+</div>
+{%- endmacro %}

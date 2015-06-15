@@ -1,0 +1,7 @@
+{% macro message_for_no_results(query) -%}
+  {% if query %}
+    <p>No results found for <b>{{query}}</b></p>
+  {% else %}
+    <p>No results found!</p>
+  {% endif %}
+{%- endmacro %}

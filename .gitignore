@@ -59,3 +59,8 @@ docs/_build/
 
 .DS_Store
 /repos/
+
+#Template files
+springboard/templates/organisms.html
+springboard/templates/molecules.html
+springboard/templates/atoms.html
