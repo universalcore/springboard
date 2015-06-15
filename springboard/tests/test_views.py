@@ -4,7 +4,6 @@ from springboard.utils import parse_repo_name
 
 from pyramid import testing
 
-from slugify import slugify
 import mock
 
 
@@ -92,7 +91,7 @@ class TestViews(SpringboardTestCase):
         })
         views = CoreViews(self.mk_request())
         indexes = map(
-            lambda path: '%s-master' % slugify(parse_repo_name(path)),
+            lambda path: '%s-master' % parse_repo_name(path),
             [workspace1.working_dir, workspace2.working_dir])
         self.assertEqual(indexes, views.all_pages.get_indexes())
         self.assertEqual(indexes, views.all_categories.get_indexes())
