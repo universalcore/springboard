@@ -8,6 +8,7 @@ from markdown import markdown
 
 from pyramid.threadlocal import get_current_registry
 
+from jinja2 import Markup
 from babel import Locale
 from pycountry import languages
 
@@ -40,7 +41,7 @@ def thumbor_filter(ctx, image, width, height=None):
 def markdown_filter(ctx, content):
     if not content:
         return content
-    return markdown(content)
+    return Markup(markdown(content))
 
 
 @contextfilter

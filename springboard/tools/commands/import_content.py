@@ -3,7 +3,7 @@ from ConfigParser import ConfigParser
 
 import yaml
 
-from springboard.utils import parse_repo_name
+from springboard.utils import parse_repo_name, config_list
 from springboard.tools.commands.bootstrap import BootstrapTool
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
@@ -69,22 +69,22 @@ class ImportContentTool(BootstrapTool):
             self.emit('Added %s to the %s config file.' % (
                 repo_name, config_file))
 
-        config_key = 'unicore.content_repo_urls'
+        config_key = 'unicore.content_repos'
 
         cp = ConfigParser()
         cp.read(ini_config)
         if not cp.has_section(ini_section):
             cp.add_section(ini_section)
 
-        existing_repo_urls = (cp.get(ini_section, config_key)
-                              if cp.has_option(ini_section, config_key)
-                              else '')
-        existing_repo_urls = existing_repo_urls.strip().split('\n')
+        existing_repo_names = (cp.get(ini_section, config_key)
+                               if cp.has_option(ini_section, config_key)
+                               else '')
+        existing_repo_names = config_list(existing_repo_names)
 
-        if repo_url not in existing_repo_urls:
+        if repo_name not in existing_repo_names:
             cp.set(ini_section, config_key,
-                   '\n'.join(chain(existing_repo_urls, [repo_url])))
+                   '\n'.join(chain(existing_repo_names, [repo_name])))
             with open(ini_config, 'w') as fp:
                 cp.write(fp)
             self.emit(
-                'Updated unicore.content_repo_urls in %s.' % (ini_config,))
+                'Updated unicore.content_repos in %s.' % (ini_config,))

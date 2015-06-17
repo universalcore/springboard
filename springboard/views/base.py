@@ -6,8 +6,6 @@ from springboard.utils import parse_repo_name, config_list
 
 from unicore.content.models import Category, Page, Localisation
 
-from slugify import slugify
-
 
 class SpringboardViews(object):
 
@@ -21,14 +19,12 @@ class SpringboardViews(object):
         }
 
         repo_dir = self.settings.get('unicore.repos_dir', 'repos')
-        repo_names = map(
-            lambda repo_url: parse_repo_name(repo_url),
-            config_list(self.settings['unicore.content_repo_urls']))
+        repo_names = config_list(self.settings['unicore.content_repos'])
         self.all_repo_paths = map(
             lambda repo_name: os.path.join(repo_dir, repo_name),
             repo_names)
         self.all_index_prefixes = map(
-            lambda repo_name: slugify(repo_name),
+            lambda repo_path_or_name: parse_repo_name(repo_path_or_name),
             repo_names)
 
         search_config = {
