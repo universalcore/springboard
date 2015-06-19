@@ -36,7 +36,10 @@ class TestFilters(SpringboardTestCase):
             crypto.generate(width=25, height=25, image_url='image'))
         self.assertEqual(
             thumbor_filter({}, 'image', 25),
-            crypto.generate(width=25, height=None, image_url='image'))
+            crypto.generate(width=25, image_url='image'))
+        self.assertEqual(
+            thumbor_filter({}, 'image', 25, None),
+            crypto.generate(width=25, height=0, image_url='image'))
 
     def test_thumbor_filter_without_security_key(self):
         testing.setUp(settings={
