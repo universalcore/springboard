@@ -5,7 +5,7 @@ $colorSecond: #fff; // white
 $colorThird: #0093ef; // blue
 $colorFourth: #92AFC1; // grey blue
 
-@include links($colorThird);
+@include links($colorFirst);
 
 // white, blue links, on baby blue
 .highlight-primary {
@@ -17,7 +17,6 @@ $colorFourth: #92AFC1; // grey blue
   .active {
     color: #92AFC1;
   }
-  
 }
 
 // white on blue
@@ -32,19 +31,5 @@ $colorFourth: #92AFC1; // grey blue
 .list-block {
   li {
     border-bottom: 1px dotted $colorSecond;
-  }
-}
-
-.logo{
-  background: $colorFirst; 
-}
-
-.footer{
-  background: $colorFirst; 
-}
-
-.border-override{
-  li {
-    border-bottom: 1px dotted $colorThird;
   }
 }

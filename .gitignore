@@ -60,7 +60,15 @@ docs/_build/
 .DS_Store
 /repos/
 
-#Template files
+# Template files
 springboard/templates/organisms.html
 springboard/templates/molecules.html
 springboard/templates/atoms.html
+
+# Sass
+.sass-cache
+springboard/static/css/*.css
+springboard/static/css/*.map
+
+# Temp
+springboard/static/img/baby-max_2183067b.jpg
