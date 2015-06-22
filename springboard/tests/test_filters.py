@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pyramid import testing
 
+from jinja2 import Markup
 from libthumbor import CryptoURL
 
 from springboard.tests import SpringboardTestCase
@@ -35,7 +36,10 @@ class TestFilters(SpringboardTestCase):
             crypto.generate(width=25, height=25, image_url='image'))
         self.assertEqual(
             thumbor_filter({}, 'image', 25),
-            crypto.generate(width=25, height=None, image_url='image'))
+            crypto.generate(width=25, image_url='image'))
+        self.assertEqual(
+            thumbor_filter({}, 'image', 25, None),
+            crypto.generate(width=25, height=0, image_url='image'))
 
     def test_thumbor_filter_without_security_key(self):
         testing.setUp(settings={
@@ -47,8 +51,10 @@ class TestFilters(SpringboardTestCase):
             thumbor_filter({}, 'image', 25), '')
 
     def test_markdown_filter(self):
+        result = markdown_filter({}, '*foo*')
+        self.assertIsInstance(result, Markup)
         self.assertEqual(
-            markdown_filter({}, '*foo*'),
+            result,
             '<p><em>foo</em></p>')
 
     def test_markdown_filter_none(self):

@@ -9,7 +9,7 @@ class TestLanguages(SpringboardTestCase):
         self.workspace = self.mk_workspace()
         settings = {
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': self.workspace.working_dir,
+            'unicore.content_repos': self.workspace.working_dir,
             'available_languages': '\n'.join([
                 'eng_GB',
                 'swa_KE',

@@ -8,6 +8,7 @@ from markdown import markdown
 
 from pyramid.threadlocal import get_current_registry
 
+from jinja2 import Markup
 from babel import Locale
 from pycountry import languages
 
@@ -26,11 +27,17 @@ def format_date_filter(ctx, timestamp, format):
 
 
 @contextfilter
-def thumbor_filter(ctx, image, width, height=None):
+def thumbor_filter(ctx, image, width, height=0):
     registry = get_current_registry(context=ctx)
     security_key = registry.settings.get('thumbor.security_key')
     if not all([security_key, image]):
         return ''
+
+    # libthumbor generates an invalid url when height is None:
+    # https://github.com/thumbor/libthumbor/blob/master/libthumbor/url.py#L19
+    # Coerce it to 0. This scales the height proportionally.
+    if height is None:
+        height = 0
 
     crypto = CryptoURL(key=security_key)
     return crypto.generate(width=width, height=height, image_url=image)
@@ -40,7 +47,7 @@ def thumbor_filter(ctx, image, width, height=None):
 def markdown_filter(ctx, content):
     if not content:
         return content
-    return markdown(content)
+    return Markup(markdown(content))
 
 
 @contextfilter
