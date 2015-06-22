@@ -9,7 +9,7 @@ DESTINATION_FILE = (path.join(mypath, pardir) + "/molecules.html")
 
 output_file = open(DESTINATION_FILE, "w")
 
-output_file.write("{% import 'atoms.html' as atoms %}\n\n")
+output_file.write("\n")
 output_file.close()
 
 output_file = open(DESTINATION_FILE, "a")
