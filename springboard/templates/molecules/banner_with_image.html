@@ -3,7 +3,7 @@
     {% if localisation and localisation.image_host and localisation.image %}
         <img alt="" src="{{localisation.image_host}}{{localisation|thumbor(320)}}"/>
     {% else %}
-        {{ atoms.image(src, "", "")}}
+        <img src="{{src|static_url}}" srcset="{{srcset}}" alt="{{alt}}">
     {% endif %}
 </div>
 {%- endmacro %}
