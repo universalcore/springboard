@@ -1,5 +1,5 @@
-{% macro search_box(view) -%} 
-  <form action={{view.request.route_url('search')}} method='GET'>
+{% macro search_box() -%} 
+  <form action={{'search'|route_url}} method='GET'>
     <label for="q">Search: 
         <input id="q" name="q" type="text">
     </label>

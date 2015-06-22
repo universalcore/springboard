@@ -1,4 +1,5 @@
 {% import 'molecules.html' as molecules %}
+{%import 'atoms.html' as atoms %}
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -12,45 +13,30 @@
     <meta name="description" content="{{ description|default("") }}" />
     <meta name="keywords" content="{{ keywords|default("") }}" />
     <link href="{{'springboard:static/css/style.css'|static_url}}" rel="stylesheet" type="text/css" />
+    <link href="{{'springboard:static/css/enhanced.css'|static_url}}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div id="header">
-        <div class="lang">
-            <div>
-                <li>
-                    <a>{{language|display_language_name}}</a>
-                </li>
-                {% for lang_code in display_languages %}
-                <li>
-                    <a href="{{'locale_matched'|route_url(language=lang_code)}}">{{lang_code|display_language_name}}</a>
-                </li>
-                {% endfor %}
-                    <li><a href="{{'locale_change'|route_url}}">&gt;&gt;</a></li>
-                </ul>
-          </div>
-        </div>
-        <div class="logo"><a href="{{'home'|route_url}}" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
-        <div class="clr"></div>
-        {% include 'auth.jinja2' %}
-    </div>
-    <div class="push"></div><!--/PUSH-->
-    <div id="submenu">
-        <a href="/">{{ gettext("Home") }}</a>
-        {% for nav in main_navigation_items %}
-            <span>
-            l <a href="{{'category'|route_url(uuid=nav.uuid)}}">{{nav.title}}</a>
-            </span>
-        {% endfor %}
-    </div>
+    {{molecules.list_of_languages(language, display_languages)}}
 
-    <div id="content">
-        {% block content %}
-        {% endblock %}
-    </div>
+    {{molecules.logo( 'springboard:static/img/logo000000.png', "")}}
+
+    {% include 'auth.jinja2' %}
+
+    <ul class="list-inline">
+        <li><a href="/">{{gettext('Home')}}</a></li>
+    {% for nav in main_navigation_items %}
+        <li><a href="{{'category'|route_url(uuid=nav.uuid)}}">{{nav.title}}</a></li>
+    {% endfor %}
+    </ul>
+
+    {% block content %}
+    {% endblock %}
 
     {% block search %}
-        {{molecules.search_box(view)}}
+        {{molecules.search_box()}}
     {% endblock %}
+
+    {{molecules.footer("Springboard 2015")}}
 
 </body>
 </html>

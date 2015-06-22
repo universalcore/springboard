@@ -1,0 +1,9 @@
+{% macro list_of_article_links(pages) -%}
+<ul>
+    {% for page in pages %}
+        <li>
+            <a href="{{'page'|route_url(uuid=page.uuid)}}">{{molecules.article_summary(page, none)}}</a>
+        </li>
+    {% endfor %}
+</ul>
+{%- endmacro %}

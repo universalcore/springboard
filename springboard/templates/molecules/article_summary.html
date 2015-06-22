@@ -1,6 +1,9 @@
-{% macro article_summary(result, all_categories) -%}
-{% if result.primary_category %}
-  <p>{{result.primary_category|get_category_title(all_categories) }}</p>
-{% endif %}
-  <a href="{{'page'|route_url(uuid=result.uuid)}}">{{result.title}} ... Read More &gt;</a>
+{% macro article_summary(page) -%}
+    <a href="{{'page'|route_url(uuid=page.uuid)}}">
+        {% if page.image and page.image_host %}
+            <img alt='{{page.title}}' src="{{page.image_host}}{{page.image|thumbor(45, 45)}}"/>
+        {% endif %}
+        <h2>{{page.title}}</h2>
+        <p>{{page.description}}</p> 
+    </a>
 {%- endmacro %}

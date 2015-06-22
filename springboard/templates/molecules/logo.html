@@ -1,7 +1,7 @@
-{% macro logo(view, src, styling_classes) -%}
+{% macro logo(src, styling_classes) -%}
 <div class="logo {{styling_classes}}">
-  <a href={{view.request.route_url('home')}}>
-   {{atoms.image(src, "", "")}}
+  <a href={{'home'|route_url}}>
+   {{atoms.image( src , "", "")}}
   </a>
 </div>
 {%- endmacro %}

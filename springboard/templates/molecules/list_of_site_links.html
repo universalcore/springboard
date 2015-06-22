@@ -1,9 +1,9 @@
 <!-- Assumed that list always includes home -->
-{% macro list_of_site_links(view, dict, styling_classes) -%}
+{% macro list_of_site_links(main_navigation_items, styling_classes) -%}
 <ul class="nav {{styling_classes}}" role="navigation">
-  <li><a href={{view.request.route_url('home')}}>Home</a></li>
-  {% for key, value in dict %}
-    <li><a href={{view.request.route_url('flatpage', slug=key)}}>{{value}}</a></li>
-  {% endfor %}
+    <li><a href="/">{{gettext('Home')}}</a></li>
+    {% for nav in main_navigation_items %}
+        <li><a href="{{'category'|route_url(uuid=nav.uuid)}}">{{nav.title}}</a></li>
+    {% endfor %}
 </ul>
 {%- endmacro %}

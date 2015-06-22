@@ -1,0 +1,6 @@
+{% macro article_summary_with_category(page, all_categories=none) -%}
+{% if page.primary_category %}
+  <p>{{page.primary_category|get_category_title(all_categories) }}</p>
+{% endif %}
+  <a href="{{'page'|route_url(uuid=page.uuid)}}">{{page.title}} ... gettext(Read More) &gt;</a>
+{%- endmacro %}

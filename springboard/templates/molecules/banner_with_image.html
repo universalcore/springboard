@@ -1,5 +1,9 @@
-{% macro banner_with_image(src) -%}
+{% macro banner_with_image(localisation, src) -%}
 <div class ="banner">
-	{{ atoms.image(src, "", "")}}
+    {% if localisation and localisation.image_host and localisation.image %}
+        <img alt="" src="{{localisation.image_host}}{{localisation|thumbor(320)}}"/>
+    {% else %}
+        {{ atoms.image(src, "", "")}}
+    {% endif %}
 </div>
 {%- endmacro %}
