@@ -2,11 +2,13 @@ from datetime import datetime
 
 from pyramid import testing
 
+from jinja2 import Markup
 from libthumbor import CryptoURL
 
 from springboard.tests import SpringboardTestCase
 from springboard.filters import (
-    format_date_filter, thumbor_filter, markdown_filter)
+    format_date_filter, thumbor_filter, markdown_filter,
+    language_direction_filter, paginate_filter)
 
 
 class TestFilters(SpringboardTestCase):
@@ -34,7 +36,10 @@ class TestFilters(SpringboardTestCase):
             crypto.generate(width=25, height=25, image_url='image'))
         self.assertEqual(
             thumbor_filter({}, 'image', 25),
-            crypto.generate(width=25, height=None, image_url='image'))
+            crypto.generate(width=25, image_url='image'))
+        self.assertEqual(
+            thumbor_filter({}, 'image', 25, None),
+            crypto.generate(width=25, height=0, image_url='image'))
 
     def test_thumbor_filter_without_security_key(self):
         testing.setUp(settings={
@@ -46,10 +51,23 @@ class TestFilters(SpringboardTestCase):
             thumbor_filter({}, 'image', 25), '')
 
     def test_markdown_filter(self):
+        result = markdown_filter({}, '*foo*')
+        self.assertIsInstance(result, Markup)
         self.assertEqual(
-            markdown_filter({}, '*foo*'),
+            result,
             '<p><em>foo</em></p>')
 
     def test_markdown_filter_none(self):
         self.assertEqual(markdown_filter({}, None), None)
         self.assertEqual(markdown_filter({}, ''), '')
+
+    def test_language_direction_filter(self):
+        self.assertEqual(language_direction_filter('eng_GB'), 'ltr')
+        self.assertEqual(language_direction_filter('urd_PK'), 'rtl')
+
+    def test_paginate_filter(self):
+        paginator = paginate_filter([1, 2, 3, 4, 5], 2,
+                                    results_per_page=1,
+                                    slider_value=2)
+        self.assertEqual(paginator.get_page(), [3])
+        self.assertEqual(paginator.page_numbers(), [1, 2, 3])

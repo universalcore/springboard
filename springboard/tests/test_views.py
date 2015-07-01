@@ -4,7 +4,6 @@ from springboard.utils import parse_repo_name
 
 from pyramid import testing
 
-from slugify import slugify
 import mock
 
 
@@ -14,7 +13,7 @@ class TestViews(SpringboardTestCase):
         self.workspace = self.mk_workspace()
         self.config = testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': self.workspace.working_dir,
+            'unicore.content_repos': self.workspace.working_dir,
         })
 
     def tearDown(self):
@@ -33,7 +32,8 @@ class TestViews(SpringboardTestCase):
         self.assertEqual(set(context.keys()),
                          set(['user', 'language', 'all_categories',
                               'all_pages', 'featured_languages',
-                              'available_languages', 'display_languages']))
+                              'available_languages', 'display_languages',
+                              'all_localisations']))
 
     def test_category(self):
         [category] = self.mk_categories(self.workspace, count=1)
@@ -86,12 +86,12 @@ class TestViews(SpringboardTestCase):
         workspace2 = self.mk_workspace(name='test_multiple_repos-2')
         testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_urls': '\n%s\n%s' % (workspace1.working_dir,
-                                                       workspace2.working_dir),
+            'unicore.content_repos': '\n%s\n%s' % (workspace1.working_dir,
+                                                   workspace2.working_dir),
         })
         views = CoreViews(self.mk_request())
         indexes = map(
-            lambda path: '%s-master' % slugify(parse_repo_name(path)),
+            lambda path: '%s-master' % parse_repo_name(path),
             [workspace1.working_dir, workspace2.working_dir])
         self.assertEqual(indexes, views.all_pages.get_indexes())
         self.assertEqual(indexes, views.all_categories.get_indexes())

@@ -80,6 +80,16 @@ class TestCloneRepoTool(SpringboardToolTestCase):
         output = tool.stdout.getvalue()
         self.assertTrue(output.endswith('Clobbering existing repository.\n'))
 
+        tool.run(
+            config=('springboard.yaml',
+                    self.mk_workspace_config(self.workspace)),
+            verbose=True,
+            clobber=False,
+            repo_dir='%s/test_clone_repo' % (self.working_dir,),
+            repo_name=None)
+        output = tool.stdout.getvalue()
+        self.assertTrue(output.endswith('already exists, skipping.\n'))
+
 
 class TestCreateIndex(SpringboardToolTestCase):
 
@@ -237,7 +247,7 @@ class TestImportContentTool(SpringboardToolTestCase):
 
         ini_config = self.mk_configfile({
             'app:main': {
-                'unicore.content_repo_urls': '',
+                'unicore.content_repos': '',
             }
         })
 
@@ -255,8 +265,8 @@ class TestImportContentTool(SpringboardToolTestCase):
         cp = ConfigParser()
         cp.read(ini_config)
         self.assertEqual(
-            cp.get('app:main', 'unicore.content_repo_urls').strip(),
-            self.workspace.working_dir)
+            cp.get('app:main', 'unicore.content_repos').strip(),
+            os.path.basename(self.workspace.working_dir))
 
         with open(yaml_config, 'r') as fp:
             data = yaml.safe_load(fp)

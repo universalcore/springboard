@@ -16,3 +16,5 @@ python-slugify
 cookiecutter
 pycountry==1.10
 babel
+raven==5.0.0
+gunicorn
