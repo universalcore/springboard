@@ -72,7 +72,7 @@ class ImportContentTool(BootstrapTool):
             self.emit('Added %s to the %s config file.' % (
                 repo_name, config_file))
 
-        config_key = 'unicore.content_repos'
+        config_key = 'unicore.content_repo_urls'
 
         cp = ConfigParser()
         cp.read(ini_config)
@@ -90,7 +90,7 @@ class ImportContentTool(BootstrapTool):
             with open(ini_config, 'w') as fp:
                 cp.write(fp)
             self.emit(
-                'Updated unicore.content_repos in %s.' % (ini_config,))
+                'Updated unicore.content_repo_urls in %s.' % (ini_config,))
 
     def import_local(self, config, verbose, clobber, repo_dir, repo_url,
                      repo_name):

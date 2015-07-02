@@ -245,7 +245,7 @@ class TestImportContentTool(SpringboardToolTestCase):
         }
         self.ini_config = self.mk_configfile({
             'app:main': {
-                'unicore.content_repos': '',
+                'unicore.content_repo_urls': '',
             }
         })
         _, self.yaml_config = self.mk_tempfile()
@@ -266,7 +266,7 @@ class TestImportContentTool(SpringboardToolTestCase):
         cp = ConfigParser()
         cp.read(self.ini_config)
         self.assertEqual(
-            cp.get('app:main', 'unicore.content_repos').strip(),
+            cp.get('app:main', 'unicore.content_repo_urls').strip(),
             os.path.basename(self.workspace.working_dir))
 
         with open(self.yaml_config, 'r') as fp:
@@ -300,7 +300,7 @@ class TestImportContentTool(SpringboardToolTestCase):
         cp = ConfigParser()
         cp.read(self.ini_config)
         self.assertEqual(
-            cp.get('app:main', 'unicore.content_repos').strip(),
+            cp.get('app:main', 'unicore.content_repo_urls').strip(),
             repo_location)
 
         with open(self.yaml_config, 'r') as fp:

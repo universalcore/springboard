@@ -1,3 +1,4 @@
+import os
 import re
 from functools import wraps
 from urlparse import urlparse
@@ -8,11 +9,25 @@ from elasticutils import S
 
 def parse_repo_name(repo_url):
     pr = urlparse(repo_url)
-    _, _, repo_name_dot_git = pr.path.rpartition('/')
-    if repo_name_dot_git.endswith('.git'):
-        repo_name, _, _ = repo_name_dot_git.partition('.')
+    _, _, repo_name_dot_ext = pr.path.rpartition('/')
+    if any([
+            repo_name_dot_ext.endswith('.git'),
+            repo_name_dot_ext.endswith('.json')]):
+        repo_name, _, _ = repo_name_dot_ext.partition('.')
         return repo_name
-    return repo_name_dot_git
+    return repo_name_dot_ext
+
+
+def repo_url(repo_dir, repo_location):
+    # If repo_location is an http URL we leave it as is and
+    # assume it specifies a unicore.distribute repo endpoint.
+    # If repo_location is not an http URL, we assume it specifies
+    # a local repo in repo_dir.
+    if any([
+            repo_location.startswith('http://'),
+            repo_location.startswith('https://')]):
+        return repo_location
+    return os.path.join(repo_dir, repo_location)
 
 
 def ga_context(context_func):

@@ -93,6 +93,7 @@ class CoreViews(SpringboardViews):
 
     @view_config(route_name='api_notify', renderer='json')
     def api_notify(self):
+        # TODO - all_repo_paths no longer exists
         for working_dir, index_prefix in zip(self.all_repo_paths,
                                              self.all_index_prefixes):
             fastforward.delay(os.path.abspath(working_dir), index_prefix)
