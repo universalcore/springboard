@@ -93,10 +93,13 @@ class CoreViews(SpringboardViews):
 
     @view_config(route_name='api_notify', renderer='json')
     def api_notify(self):
-        # TODO - all_repo_paths no longer exists
-        for working_dir, index_prefix in zip(self.all_repo_paths,
+        for working_dir, index_prefix in zip(self.all_repo_urls,
                                              self.all_index_prefixes):
-            fastforward.delay(os.path.abspath(working_dir), index_prefix)
+            if not any([
+                    working_dir.startswith('http://'),
+                    working_dir.startswith('https://')]):
+                fastforward.delay(os.path.abspath(working_dir), index_prefix)
+            # TODO: what is the best way to update a remote repo?
         return {}
 
     @notfound_view_config(renderer='springboard:templates/404.jinja2')
