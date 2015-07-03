@@ -5,6 +5,7 @@ from urlparse import urlparse
 import math
 
 from elasticutils import S
+from elasticgit.search import RepoHelper
 
 
 def parse_repo_name(repo_url):
@@ -185,3 +186,16 @@ class Paginator(object):
         if not any(page_numbers):
             return False
         return page_numbers[-1] < self.total_pages() - 1
+
+
+class CachingRepoHelper(RepoHelper):
+    """
+    A subclass of RepoHelper that caches the repo's active
+    branch name to avoid remote calls to get the repo branch.
+    """
+
+    def active_branch_name(self):
+        if not hasattr(self, '_active_branch_name'):
+            self._active_branch_name = super(
+                CachingRepoHelper, self).active_branch_name()
+        return self._active_branch_name

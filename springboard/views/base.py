@@ -1,6 +1,7 @@
 from elasticgit.search import SM
 
-from springboard.utils import parse_repo_name, config_list, repo_url
+from springboard.utils import (
+    parse_repo_name, config_list, repo_url, CachingRepoHelper)
 
 from unicore.content.models import Category, Page, Localisation
 
@@ -25,7 +26,7 @@ class SpringboardViews(object):
             self.all_repo_urls)
 
         search_config = {
-            'in_': self.all_repo_urls,
+            'in_': [CachingRepoHelper(url) for url in self.all_repo_urls],
             'index_prefixes': self.all_index_prefixes
         }
         self.all_categories = SM(Category, **search_config).es(
