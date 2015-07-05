@@ -19,16 +19,20 @@ def parse_repo_name(repo_url):
     return repo_name_dot_ext
 
 
+def is_remote_repo_url(repo_url):
+    return any([
+        repo_url.startswith('http://'),
+        repo_url.startswith('https://')])
+
+
 def repo_url(repo_dir, repo_location):
     # If repo_location is an http URL we leave it as is and
     # assume it specifies a unicore.distribute repo endpoint.
     # If repo_location is not an http URL, we assume it specifies
     # a local repo in repo_dir.
-    if any([
-            repo_location.startswith('http://'),
-            repo_location.startswith('https://')]):
+    if is_remote_repo_url(repo_location):
         return repo_location
-    return os.path.join(repo_dir, repo_location)
+    return os.path.abspath(os.path.join(repo_dir, repo_location))
 
 
 def ga_context(context_func):

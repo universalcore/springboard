@@ -68,7 +68,7 @@ class TestViews(SpringboardTestCase):
         self.assertIn('<h1>404 not found</h1>', resp.body)
         self.assertEqual(resp.status_int, 404)
 
-    @mock.patch('unicore.distribute.tasks.fastforward.delay')
+    @mock.patch('springboard.tasks.pull.delay')
     def test_api_notify(self, mock_delay):
         request = self.mk_request()
         request.method = 'POST'
@@ -76,10 +76,11 @@ class TestViews(SpringboardTestCase):
         views = CoreViews(request)
         response = views.api_notify()
         mock_delay.assert_called_once()
-        (working_dir, index_prefix), _ = mock_delay.call_args_list[0]
+        args, kwargs = mock_delay.call_args
         self.assertEqual(response, {})
-        self.assertEqual(working_dir, self.workspace.working_dir)
-        self.assertEqual(index_prefix, self.workspace.index_prefix)
+        self.assertEqual(kwargs['repo_url'], self.workspace.working_dir)
+        self.assertEqual(kwargs['index_prefix'], self.workspace.index_prefix)
+        self.assertEqual(kwargs['es'], views.es_settings)
 
     def test_multiple_repos(self):
         workspace1 = self.workspace
