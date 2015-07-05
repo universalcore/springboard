@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from pyramid import testing
 
 from mock import patch
