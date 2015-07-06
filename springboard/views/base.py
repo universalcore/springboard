@@ -1,8 +1,7 @@
-import os
-
 from elasticgit.search import SM
 
-from springboard.utils import parse_repo_name, config_list
+from springboard.utils import (
+    parse_repo_name, config_list, repo_url, CachingRepoHelper)
 
 from unicore.content.models import Category, Page, Localisation
 
@@ -19,16 +18,15 @@ class SpringboardViews(object):
         }
 
         repo_dir = self.settings.get('unicore.repos_dir', 'repos')
-        repo_names = config_list(self.settings['unicore.content_repos'])
-        self.all_repo_paths = map(
-            lambda repo_name: os.path.join(repo_dir, repo_name),
-            repo_names)
+        self.all_repo_urls = map(
+            lambda repo_loc: repo_url(repo_dir, repo_loc),
+            config_list(self.settings['unicore.content_repo_urls']))
         self.all_index_prefixes = map(
-            lambda repo_path_or_name: parse_repo_name(repo_path_or_name),
-            repo_names)
+            lambda repo_url: parse_repo_name(repo_url),
+            self.all_repo_urls)
 
         search_config = {
-            'in_': self.all_repo_paths,
+            'in_': [CachingRepoHelper(url) for url in self.all_repo_urls],
             'index_prefixes': self.all_index_prefixes
         }
         self.all_categories = SM(Category, **search_config).es(

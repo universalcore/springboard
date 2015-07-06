@@ -13,7 +13,7 @@ class TestViews(SpringboardTestCase):
         self.workspace = self.mk_workspace()
         self.config = testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repos': self.workspace.working_dir,
+            'unicore.content_repo_urls': self.workspace.working_dir,
         })
 
     def tearDown(self):
@@ -68,7 +68,7 @@ class TestViews(SpringboardTestCase):
         self.assertIn('<h1>404 not found</h1>', resp.body)
         self.assertEqual(resp.status_int, 404)
 
-    @mock.patch('unicore.distribute.tasks.fastforward.delay')
+    @mock.patch('springboard.tasks.pull.delay')
     def test_api_notify(self, mock_delay):
         request = self.mk_request()
         request.method = 'POST'
@@ -76,18 +76,19 @@ class TestViews(SpringboardTestCase):
         views = CoreViews(request)
         response = views.api_notify()
         mock_delay.assert_called_once()
-        (working_dir, index_prefix), _ = mock_delay.call_args_list[0]
+        args, kwargs = mock_delay.call_args
         self.assertEqual(response, {})
-        self.assertEqual(working_dir, self.workspace.working_dir)
-        self.assertEqual(index_prefix, self.workspace.index_prefix)
+        self.assertEqual(kwargs['repo_url'], self.workspace.working_dir)
+        self.assertEqual(kwargs['index_prefix'], self.workspace.index_prefix)
+        self.assertEqual(kwargs['es'], views.es_settings)
 
     def test_multiple_repos(self):
         workspace1 = self.workspace
         workspace2 = self.mk_workspace(name='test_multiple_repos-2')
         testing.setUp(settings={
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repos': '\n%s\n%s' % (workspace1.working_dir,
-                                                   workspace2.working_dir),
+            'unicore.content_repo_urls': '\n%s\n%s' % (workspace1.working_dir,
+                                                       workspace2.working_dir),
         })
         views = CoreViews(self.mk_request())
         indexes = map(

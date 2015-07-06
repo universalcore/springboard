@@ -10,7 +10,7 @@ from springboard.tools.commands.base import (
 class CloneRepoTool(SpringboardToolCommand):
 
     command_name = 'clone'
-    command_help_text = 'Tools for cloning repositories.'
+    command_help_text = 'Tools for cloning repositories locally.'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
             '-rn', '--repo-name',

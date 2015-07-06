@@ -36,7 +36,7 @@ class SpringboardToolCommand(ToolCommand):
         CommandArgument(
             '-r', '--repo-dir',
             dest='repo_dir',
-            help='Directory to put repositories in.',
+            help='Local directory to put repositories in.',
             default='repos'),
     )
 
