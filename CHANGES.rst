@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.0.2
+-----
+- fix package manifest
+
 3.0.1
 -----
 - add `pyramid_redis` to dependencies for use in celery
