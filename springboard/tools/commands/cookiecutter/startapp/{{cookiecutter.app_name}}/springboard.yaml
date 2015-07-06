@@ -2,6 +2,7 @@
 repositories: {}
 
 # List of models to be loaded and their mappings, if any.
+# NOTE: only necessary if manually setting up Elasticsearch index
 models:
   unicore.content.models.Category:
     properties:
