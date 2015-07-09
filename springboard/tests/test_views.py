@@ -108,10 +108,7 @@ class TestViews(SpringboardTestCase):
             created_at=datetime.utcnow().isoformat(),
             primary_category=category.uuid)
 
-        app = self.mk_app(
-            self.workspace,
-            settings={'ga.profile_id': 'ID-000',
-                      'ga.persona_dimension_id': 'dimension0'})
+        app = self.mk_app(self.workspace, settings={'ga.profile_id': 'ID-000'})
 
         app.get('/')
         data = mock_task.call_args[0][2]
