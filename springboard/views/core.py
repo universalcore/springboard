@@ -13,6 +13,7 @@ ONE_YEAR = 31536000
 
 class CoreViews(SpringboardViews):
 
+    @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home',
                  renderer='springboard:templates/home.jinja2')
     def index_view(self):
@@ -102,12 +103,14 @@ class CoreViews(SpringboardViews):
         self.request.response.status = 404
         return self.context()
 
+    @ga_context(lambda context: {'dt': 'Choose Language', })
     @view_config(
         route_name='locale_change',
         renderer='springboard:templates/locale_change.jinja2')
     def locale_change(self):
         return self.context()
 
+    @ga_context(lambda context: {'dt': 'Set Language', })
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
     def set_locale_cookie(self):
