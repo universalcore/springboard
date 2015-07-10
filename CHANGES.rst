@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.0.3
+-----
+- ensure GA titles for non-page views are set
+- ensure celery is configured
+
 3.0.2
 -----
 - fix package manifest

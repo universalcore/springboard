@@ -1,10 +1,12 @@
+import mock
+
+from datetime import datetime
+
 from springboard.tests import SpringboardTestCase
 from springboard.views.core import CoreViews
 from springboard.utils import parse_repo_name
 
 from pyramid import testing
-
-import mock
 
 
 class TestViews(SpringboardTestCase):
@@ -96,3 +98,38 @@ class TestViews(SpringboardTestCase):
             [workspace1.working_dir, workspace2.working_dir])
         self.assertEqual(indexes, views.all_pages.get_indexes())
         self.assertEqual(indexes, views.all_categories.get_indexes())
+
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_page_titles(self, mock_task):
+        self.workspace = self.mk_workspace(name='ffl')
+        [category] = self.mk_categories(self.workspace, count=1, position=1)
+        [page] = self.mk_pages(
+            self.workspace, count=1, position=1,
+            created_at=datetime.utcnow().isoformat(),
+            primary_category=category.uuid)
+
+        app = self.mk_app(self.workspace, settings={'ga.profile_id': 'ID-000'})
+
+        app.get('/')
+        data = mock_task.call_args[0][2]
+        self.assertEqual(data['dt'], 'Home')
+
+        app.get('/category/%s/' % category.uuid)
+        data = mock_task.call_args[0][2]
+        self.assertEqual(data['dt'], category.title)
+
+        app.get('/page/%s/' % page.uuid)
+        data = mock_task.call_args[0][2]
+        self.assertEqual(data['dt'], page.title)
+
+        app.get('/locale/change/')
+        data = mock_task.call_args[0][2]
+        self.assertEqual(data['dt'], 'Choose Language')
+
+        app.get('/locale/eng_GB/')
+        data = mock_task.call_args[0][2]
+        self.assertEqual(data['dt'], 'Set Language')
+
+        app.get('/locale/?locale=eng_GB')
+        data = mock_task.call_args[0][2]
+        self.assertEqual(data['dt'], 'Set Language')
