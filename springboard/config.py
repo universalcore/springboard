@@ -1,5 +1,6 @@
 def includeme(config):
     config.include('springboard.auth')
+    config.include("pyramid_celery")
     config.add_static_view('static', 'springboard:static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('category', '/category/{uuid}/')
