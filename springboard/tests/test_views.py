@@ -13,10 +13,11 @@ class TestViews(SpringboardTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
-        self.config = testing.setUp(settings={
+        self.settings = {
             'unicore.repos_dir': self.working_dir,
             'unicore.content_repo_urls': self.workspace.working_dir,
-        })
+        }
+        self.config = testing.setUp(settings=self.settings)
 
     def tearDown(self):
         testing.tearDown()
@@ -36,6 +37,10 @@ class TestViews(SpringboardTestCase):
                               'all_pages', 'featured_languages',
                               'available_languages', 'display_languages',
                               'all_localisations']))
+
+    def test_health(self):
+        app = self.mk_app(self.workspace, settings=self.settings)
+        app.get('/health/', status=200)
 
     def test_category(self):
         [category] = self.mk_categories(self.workspace, count=1)
