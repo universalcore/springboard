@@ -2,6 +2,7 @@ import os
 import tempfile
 import pkg_resources
 import yaml
+import uuid
 
 from ConfigParser import ConfigParser
 from datetime import datetime
@@ -9,6 +10,7 @@ from unittest import TestCase
 
 from webtest import TestApp
 from pyramid import testing
+from beaker.session import Session
 
 from elasticgit import EG
 from elasticgit.utils import load_class
@@ -18,6 +20,7 @@ from slugify import slugify
 from unicore.content.models import Category, Page, Localisation
 
 from springboard.application import main
+from springboard.auth import USER_DATA_SESSION_KEY
 
 
 class SpringboardTestCase(TestCase):
@@ -34,9 +37,9 @@ class SpringboardTestCase(TestCase):
                      auto_destroy=None,
                      author_name='Test Kees',
                      author_email='kees@example.org'):  # pragma: no cover
-        name = name or self.id()
+        name = name or self.id().lower()
         working_dir = working_dir or self.working_dir
-        index_prefix = index_prefix or slugify(name)
+        index_prefix = index_prefix or name
         auto_destroy = auto_destroy or self.destroy
         workspace = EG.workspace(os.path.join(working_dir, name), es={
             'urls': [url],
@@ -67,7 +70,7 @@ class SpringboardTestCase(TestCase):
 
         settings_defaults = {
             'unicore.repos_dir': self.working_dir,
-            'unicore.content_repo_url': workspace.working_dir,
+            'unicore.content_repo_urls': workspace.working_dir,
         }
         settings_defaults.update(settings)
 
@@ -82,6 +85,8 @@ class SpringboardTestCase(TestCase):
         request = testing.DummyRequest(params)
         request.locale_name = locale_name
         request.matchdict = matchdict
+        request.google_analytics = {}
+        request.user = None
         return request
 
     def mk_tempfile(self):  # pragma: no cover
@@ -161,3 +166,21 @@ class SpringboardTestCase(TestCase):
             localisation, message=u'Added localisation %s.' % locale)
         workspace.refresh_index()
         return localisation
+
+    def mk_session(self, logged_in=True, user_data={}):
+        session_id = uuid.uuid4().hex
+        session = Session(
+            testing.DummyRequest(), id=session_id, use_cookies=False)
+
+        if logged_in:
+            user_data = user_data or {
+                'uuid': uuid.uuid4().hex,
+                'username': 'foo',
+                'app_data': {'display_name': 'foobar'}
+            }
+            session[USER_DATA_SESSION_KEY] = user_data
+            session['auth.userid'] = user_data['uuid']
+
+        session.save()
+        # return the session and cookie header
+        return session, {'Cookie': 'beaker.session.id=%s' % session_id}

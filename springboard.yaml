@@ -1,8 +1,10 @@
 # List of content repositories to be working with
 repositories:
-  unicore-cms-content-gem-tanzania: 'https://github.com/universalcore/unicore-cms-content-gem-tanzania'
+  gem-tz: 'https://github.com/universalcore/unicore-cms-content-gem-tanzania'
+  mama-tz: 'https://github.com/universalcore/unicore-cms-content-mama-tz-qa'
 
 # List of models to be loaded and their mappings, if any.
+# NOTE: only necessary if manually setting up Elasticsearch index
 models:
   unicore.content.models.Category:
     properties:

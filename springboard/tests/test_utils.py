@@ -1,6 +1,15 @@
+import os
 from unittest import TestCase
 
-from springboard.utils import parse_repo_name
+from mock import patch
+
+from unicore.content.models import Category
+from elasticgit.search import SM
+
+from springboard.tests.base import SpringboardTestCase
+from springboard.utils import (
+    parse_repo_name, config_list, config_dict, Paginator,
+    is_remote_repo_url, repo_url, CachingRepoHelper)
 
 
 class TestUtils(TestCase):
@@ -18,3 +27,146 @@ class TestUtils(TestCase):
         self.assertParsed('foo', 'ssh://git@domain:repo/foo')
         self.assertParsed('foo', 'http://domain/repo/foo')
         self.assertParsed('foo', 'https://domain/repo/foo')
+
+    def test_config_list(self):
+        self.assertEqual(['1', '2', '3'], config_list('1\n2\n3'))
+        self.assertEqual(['1', '2', '3'], config_list('1\n2\n3\n'))
+        self.assertEqual([], config_list(''))
+
+    def test_config_dict(self):
+        self.assertEqual({
+            'a': '1',
+            'b': '2',
+            'c': '3',
+        }, config_dict('a=1\nb=2\nc=3'))
+        self.assertEqual({
+            'foo': 'bar',
+            'gum': 'tree',
+            'elastic': 'search',
+        }, config_dict('foo=bar\ngum=tree\nelastic=search\n'))
+        self.assertEqual({}, config_dict(''))
+
+    def test_is_remote_repo_url(self):
+        self.assertTrue(is_remote_repo_url('http://domain/repo/foo'))
+        self.assertTrue(is_remote_repo_url('https://domain/repo/foo'))
+        self.assertFalse(is_remote_repo_url('/repos/foo'))
+        self.assertFalse(is_remote_repo_url('foo'))
+
+    def test_repo_url(self):
+        self.assertEqual(repo_url('repos', 'http://domain/repo/foo'),
+                         'http://domain/repo/foo')
+        self.assertEqual(repo_url('repos', 'https://domain/repo/foo'),
+                         'https://domain/repo/foo')
+        self.assertEqual(repo_url('repos', '/bar/foo'), '/bar/foo')
+        self.assertEqual(repo_url('repos', 'foo'),
+                         os.path.abspath('repos/foo'))
+
+    @patch('springboard.utils.RepoHelper.active_branch_name')
+    def test_cachingrepohelper(self, mocked_branch_name):
+        mocked_branch_name.return_value = 'branch-foo'
+        repo = CachingRepoHelper('http://domain/repo/foo')
+        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
+        # check that 2nd call is cached
+        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
+
+
+class TestPaginator(TestCase):
+
+    def mk_paginator(self, results, page, **kwargs):
+        return Paginator(results, page, **kwargs)
+
+    def test_first_page(self):
+        paginator = self.mk_paginator(range(100), 0)
+        self.assertTrue(paginator.has_next_page())
+        self.assertFalse(paginator.has_previous_page())
+        self.assertEqual(paginator.total_pages(), 10)
+        self.assertEqual(paginator.page_numbers(), [0, 1, 2, 3, 4])
+        self.assertFalse(paginator.needs_start_ellipsis())
+        self.assertTrue(paginator.needs_end_ellipsis())
+        self.assertEqual(paginator.page_numbers_left(), [])
+        self.assertEqual(paginator.page_numbers_right(), [1, 2, 3, 4])
+
+    def test_last_page(self):
+        paginator = self.mk_paginator(range(100), 9)
+        self.assertFalse(paginator.has_next_page())
+        self.assertTrue(paginator.has_previous_page())
+        self.assertEqual(paginator.total_pages(), 10)
+        self.assertEqual(paginator.page_numbers(), [5, 6, 7, 8, 9])
+        self.assertTrue(paginator.needs_start_ellipsis())
+        self.assertFalse(paginator.needs_end_ellipsis())
+        self.assertEqual(paginator.page_numbers_left(), [5, 6, 7, 8])
+        self.assertEqual(paginator.page_numbers_right(), [])
+
+    def test_middle_page(self):
+        paginator = self.mk_paginator(range(100), 4)
+        self.assertTrue(paginator.has_next_page())
+        self.assertTrue(paginator.has_previous_page())
+        self.assertEqual(paginator.total_pages(), 10)
+        self.assertEqual(paginator.page_numbers(), [2, 3, 4, 5, 6])
+        self.assertTrue(paginator.needs_start_ellipsis())
+        self.assertTrue(paginator.needs_end_ellipsis())
+        self.assertEqual(paginator.page_numbers_left(), [2, 3])
+        self.assertEqual(paginator.page_numbers_right(), [5, 6])
+
+    def test_show_start(self):
+        paginator = self.mk_paginator(range(100), 3)
+        self.assertTrue(paginator.show_start())
+        self.assertFalse(paginator.needs_start_ellipsis())
+        self.assertEqual(paginator.page_numbers_left(), [1, 2])
+        self.assertEqual(paginator.page_numbers_right(), [4, 5])
+
+    def test_show_end(self):
+        paginator = self.mk_paginator(range(100), 7)
+        self.assertTrue(paginator.show_start())
+        self.assertTrue(paginator.needs_start_ellipsis())
+        self.assertEqual(paginator.page_numbers(), [5, 6, 7, 8, 9])
+        self.assertEqual(paginator.page_numbers_left(), [5, 6])
+        self.assertEqual(paginator.page_numbers_right(), [8, 9])
+        self.assertFalse(paginator.show_end())
+        self.assertFalse(paginator.needs_end_ellipsis())
+
+    def test_show_end_not_ellipsis(self):
+        paginator = self.mk_paginator(range(100), 6)
+        self.assertTrue(paginator.show_start())
+        self.assertTrue(paginator.needs_start_ellipsis())
+        self.assertEqual(paginator.page_numbers(), [4, 5, 6, 7, 8])
+        self.assertEqual(paginator.page_numbers_left(), [4, 5])
+        self.assertEqual(paginator.page_numbers_right(), [7, 8])
+        self.assertTrue(paginator.show_end())
+        self.assertFalse(paginator.needs_end_ellipsis())
+
+    def test_small_result_set(self):
+        paginator = self.mk_paginator(range(39), 0)
+        self.assertFalse(paginator.show_start())
+        self.assertFalse(paginator.needs_start_ellipsis())
+        self.assertFalse(paginator.show_end())
+        self.assertFalse(paginator.needs_end_ellipsis())
+        self.assertEqual(paginator.page_numbers_left(), [])
+        self.assertEqual(paginator.page_numbers_right(), [1, 2, 3])
+
+    def test_large_end_result_set(self):
+        paginator = self.mk_paginator(range(133), 12)
+        self.assertEqual(paginator.page_numbers(), [9, 10, 11, 12, 13])
+        self.assertEqual(paginator.page_numbers_left(), [9, 10, 11])
+        self.assertEqual(paginator.page_numbers_right(), [13])
+        self.assertFalse(paginator.show_end())
+        self.assertFalse(paginator.needs_end_ellipsis())
+
+
+class TestPaginatorWithESResults(TestPaginator, SpringboardTestCase):
+
+    def mk_paginator(self, results, page, **kwargs):
+        workspace = self.mk_workspace()
+        patch_count = patch.object(
+            SM, 'count', return_value=len(results))
+        patch_count.start()
+        self.addCleanup(patch_count.stop)
+        results = SM(Category, in_=[workspace.working_dir])
+        return Paginator(results, page, **kwargs)
+
+    def test_get_page(self):
+        paginator = self.mk_paginator(range(10), 0)
+        page = paginator.get_page()
+        self.assertIsInstance(page, SM)

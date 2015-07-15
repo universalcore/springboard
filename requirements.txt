@@ -1,10 +1,13 @@
-elastic-git>=0.3.3
+elastic-git>=1.4.0
 unicore.content
 unicore.google
 unicore.distribute
+unicore.hub.client>=0.1.1
 pyramid
+pyramid-beaker>=0.8
 pyramid_jinja2
 pyramid_celery>=2.0.0rc4
+pyramid_redis
 pyyaml
 waitress
 python-dateutil
@@ -12,3 +15,7 @@ libthumbor
 Markdown
 python-slugify
 cookiecutter
+pycountry==1.10
+babel
+raven==5.0.0
+gunicorn

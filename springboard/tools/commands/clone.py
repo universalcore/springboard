@@ -10,22 +10,26 @@ from springboard.tools.commands.base import (
 class CloneRepoTool(SpringboardToolCommand):
 
     command_name = 'clone'
-    command_help_text = 'Tools for cloning repositories.'
+    command_help_text = 'Tools for cloning repositories locally.'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
-            'repo_name',
-            metavar='repo_name',
+            '-rn', '--repo-name',
+            dest='repo_name',
             help='The name of the repository to clone.'),
     )
 
     def run(self, config, verbose, clobber, repo_dir, repo_name):
         config_file, config_data = config
-        repo_url = config_data['repositories'][repo_name]
-        return self.clone_repo(repo_name,
-                               repo_url,
-                               repo_dir=repo_dir,
-                               clobber=clobber,
-                               verbose=verbose)
+        repo_names = ([repo_name]
+                      if repo_name
+                      else config_data['repositories'].keys())
+        repos = [self.clone_repo(name,
+                                 config_data['repositories'][name],
+                                 repo_dir=repo_dir,
+                                 clobber=clobber,
+                                 verbose=verbose)
+                 for name in repo_names]
+        return repos
 
     def clone_repo(self, repo_name, repo_url,
                    repo_dir='repos', clobber=False, verbose=False):

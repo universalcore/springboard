@@ -3,8 +3,6 @@ import os
 from elasticgit import EG
 from elasticgit.utils import load_class, fqcn
 
-from slugify import slugify
-
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
 
@@ -12,7 +10,7 @@ from springboard.tools.commands.base import (
 class SyncDataTool(SpringboardToolCommand):
 
     command_name = 'sync-data'
-    command_help_text = 'Sync data from a repo with elastic-git'
+    command_help_text = 'Sync data from a local repo with elastic-git'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
             'repo_name',
@@ -31,7 +29,7 @@ class SyncDataTool(SpringboardToolCommand):
     def sync_data(self, workdir, model_class, verbose=False, clobber=False):
         self.verbose = verbose
         workdir = EG.workspace(
-            workdir, index_prefix=slugify(os.path.basename(workdir)))
+            workdir, index_prefix=os.path.basename(workdir))
         self.emit('Syncing data for %s.' % (fqcn(model_class),))
         workdir.sync(model_class)
         self.emit('Data synced.')

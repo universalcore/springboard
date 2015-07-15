@@ -9,17 +9,22 @@ Welcome to Springboard's documentation!
 Springboard is a library and command line tool for scaffolding and
 bootstrapping sites for Universal Core.
 
-.. image:: https://travis-ci.org/smn/springboard.svg?branch=develop
-    :target: https://travis-ci.org/smn/springboard
+.. image:: https://travis-ci.org/universalcore/springboard.svg?branch=develop
+    :target: https://travis-ci.org/universalcore/springboard
     :alt: Continuous Integration
 
-.. image:: https://coveralls.io/repos/smn/springboard/badge.png?branch=develop
-    :target: https://coveralls.io/r/smn/springboard?branch=develop
+.. image:: https://coveralls.io/repos/universalcore/springboard/badge.png?branch=develop
+    :target: https://coveralls.io/r/universalcore/springboard?branch=develop
     :alt: Code Coverage
 
 .. image:: https://readthedocs.org/projects/springboard/badge/?version=latest
     :target: https://springboard.readthedocs.org
     :alt: Springboard Documentation
+
+.. image:: https://pypip.in/version/springboard/badge.svg
+    :target: https://pypi.python.org/pypi/springboard
+    :alt: Pypi Package
+
 
 .. image:: springboard.gif
 

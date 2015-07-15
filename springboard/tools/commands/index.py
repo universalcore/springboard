@@ -2,8 +2,6 @@ import os
 
 from elasticgit import EG
 
-from slugify import slugify
-
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
 
@@ -27,7 +25,7 @@ class CreateIndexTool(SpringboardToolCommand):
     def create_index(self, workdir, verbose=False, clobber=False):
         self.verbose = verbose
         workspace = EG.workspace(
-            workdir, index_prefix=slugify(os.path.basename(workdir)))
+            workdir, index_prefix=os.path.basename(workdir))
         branch = workspace.repo.active_branch
         self.emit('Creating index for %s.' % (branch.name,))
         if workspace.im.index_exists(branch.name) and not clobber:

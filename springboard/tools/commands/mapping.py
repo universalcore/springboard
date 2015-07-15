@@ -3,8 +3,6 @@ import os
 from elasticgit import EG
 from elasticgit.utils import load_class, fqcn
 
-from slugify import slugify
-
 from springboard.tools.commands.base import (
     SpringboardToolCommand, CommandArgument)
 
@@ -27,11 +25,11 @@ class CreateMappingTool(SpringboardToolCommand):
             self.create_mapping(os.path.join(repo_dir, repo_name),
                                 model_class, mapping, verbose=verbose)
 
-    def create_mapping(self, repo_dir, model_class, mapping,
+    def create_mapping(self, workdir, model_class, mapping,
                        verbose=False):
         self.verbose = verbose
         workspace = EG.workspace(
-            repo_dir, index_prefix=slugify(os.path.basename(repo_dir)))
+            workdir, index_prefix=os.path.basename(workdir))
         self.emit('Creating mapping for %s.' % (fqcn(model_class),))
         workspace.setup_custom_mapping(model_class, mapping)
         self.emit('Mapping created.')

@@ -1,6 +1,9 @@
+{% import 'molecules.html' as molecules %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      dir="{{ language|language_direction }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="shortcut icon" type="image/x-icon" href="{{'springboard:static/img/favicon.ico'|static_url}}" />
@@ -14,18 +17,21 @@
     <div id="header">
         <div class="lang">
             <div>
-                {% for code, name in languages %}
-                <span>
-                    <a href="/locale/?language={{code}}">{{name}}</a>
-                    {% if not forloop.last %}
-                        <span> |</span>
-                    {% endif %}
-                </span>
+                <li>
+                    <a>{{language|display_language_name}}</a>
+                </li>
+                {% for lang_code in display_languages %}
+                <li>
+                    <a href="{{'locale_matched'|route_url(language=lang_code)}}">{{lang_code|display_language_name}}</a>
+                </li>
                 {% endfor %}
+                    <li><a href="{{'locale_change'|route_url}}">&gt;&gt;</a></li>
+                </ul>
           </div>
         </div>
-        <div class="logo"><a href="/" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
+        <div class="logo"><a href="{{'home'|route_url}}" class="logo"><img alt='Skeleton' src="{{ 'springboard:static/img/logo000000.png'|static_url }}" /></a></div>
         <div class="clr"></div>
+        {% include 'auth.jinja2' %}
     </div>
     <div class="push"></div><!--/PUSH-->
     <div id="submenu">
@@ -41,6 +47,10 @@
         {% block content %}
         {% endblock %}
     </div>
+
+    {% block search %}
+        {{molecules.search_box(view)}}
+    {% endblock %}
 
 </body>
 </html>
