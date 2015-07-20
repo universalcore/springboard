@@ -34,4 +34,8 @@ setup(name='springboard',
       entry_points={
           'paste.app_factory': ['main = springboard.application:main'],
           'console_scripts': ['springboard = springboard.tools.main:main'],
-      })
+      },
+      message_extractors={'.': [
+          ('**.py', 'python', None),
+          ('**.jinja2', 'jinja2', None),
+      ]})
