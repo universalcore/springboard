@@ -41,7 +41,7 @@ class UpdateMessagesTool(ToolCommand):
 
         # delete existing .mo files
         for filename in glob.glob(
-                    os.path.join(locale_dir, '*/LC_MESSAGES/*.mo')):
+                os.path.join(locale_dir, '*/LC_MESSAGES/*.mo')):
             os.remove(filename)
 
         # generate new .pot file
