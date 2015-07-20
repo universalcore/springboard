@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.0.5
+-----
+- add uwsgi to dependencies
+
 3.0.3
 -----
 - ensure GA titles for non-page views are set
