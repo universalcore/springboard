@@ -5,6 +5,7 @@ from springboard.tools.commands.sync import SyncDataTool
 from springboard.tools.commands.bootstrap import BootstrapTool
 from springboard.tools.commands.startapp import StartAppTool
 from springboard.tools.commands.import_content import ImportContentTool
+from springboard.tools.commands.update_messages import UpdateMessagesTool
 
 __all__ = [
     'CloneRepoTool',
