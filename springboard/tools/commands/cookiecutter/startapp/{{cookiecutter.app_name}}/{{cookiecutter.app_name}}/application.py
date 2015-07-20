@@ -20,5 +20,6 @@ def main(global_config, **settings):
     config.add_static_view(
         'static', '{{cookiecutter.app_name}}:static', cache_max_age=3600)
     config.add_translation_dirs('{{cookiecutter.app_name}}:locale/')
+    config.configure_celery(global_config['__file__'])
 
     return config.make_wsgi_app()
