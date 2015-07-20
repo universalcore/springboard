@@ -16,12 +16,12 @@ class UpdateMessagesTool(ToolCommand):
             '-i', '--ini',
             dest='ini_config',
             default='development.ini',
-            help='The paste ini file to update.'),
+            help='The paste ini file to get the locales from.'),
         CommandArgument(
             '-s', '--ini-section',
             dest='ini_section',
             default='app:main',
-            help='The paste ini section to update.'),
+            help='The paste ini section to get the locales from.'),
         CommandArgument(
             '-l', '--locale',
             dest='locales',
