@@ -19,5 +19,6 @@ def main(global_config, **settings):
         override_with='{{cookiecutter.app_name}}:templates/')
     config.add_static_view(
         'static', '{{cookiecutter.app_name}}:static', cache_max_age=3600)
+    config.add_translation_dirs('{{cookiecutter.app_name}}:locale/')
 
     return config.make_wsgi_app()
