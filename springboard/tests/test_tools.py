@@ -6,11 +6,13 @@ from StringIO import StringIO
 
 import yaml
 
+from mock import patch, Mock
+
 from springboard.tests import SpringboardTestCase
 from springboard.utils import parse_repo_name
 from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
-    BootstrapTool, ImportContentTool)
+    BootstrapTool, ImportContentTool, UpdateMessagesTool)
 from springboard.tools.commands.base import YAMLFile
 
 
@@ -308,3 +310,56 @@ class TestImportContentTool(SpringboardToolTestCase):
             self.assertEqual(data['repositories'], {
                 repo_name: self.workspace.working_dir
             })
+
+
+class TestUpdateMessagesTool(SpringboardToolTestCase):
+
+    @patch('springboard.tools.commands.update_messages.run_setup')
+    def test_update_messages(self, mocked_run_setup):
+        tool = UpdateMessagesTool()
+        tool.stdout = StringIO()
+        ini_config = self.mk_configfile({
+            'app:main': {
+                'available_languages': 'eng_GB\npor_PT',
+            }
+        })
+        mocked_run_setup.return_value = Mock(get_name=Mock(return_value='foo'))
+
+        tool.run(
+            ini_config=ini_config,
+            ini_section='app:main',
+            locales=[])
+
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['extract_messages', '-o', 'foo/locale/messages.pot'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['init_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale', '-l', 'por_PT'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['init_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale', '-l', 'eng_GB'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['update_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['compile_catalog', '-d', 'foo/locale'])
+
+        mocked_run_setup.reset_mock()
+        tool.run(
+            ini_config=ini_config,
+            ini_section='app:main',
+            locales=['swa_KE'])
+
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['init_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale', '-l', 'swa_KE'])
+        init_calls = filter(
+            lambda call: len(call[0]) > 1 and call[0][1][0] == 'init_catalog',
+            mocked_run_setup.call_args_list)
+        self.assertEqual(len(init_calls), 1)

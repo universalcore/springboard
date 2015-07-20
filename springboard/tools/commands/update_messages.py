@@ -13,10 +13,6 @@ class UpdateMessagesTool(ToolCommand):
     command_help_text = 'Update or create .po and .mo message files'
     command_arguments = (
         CommandArgument(
-            'package_dir',
-            metavar='package_dir',
-            help='The package directory.'),
-        CommandArgument(
             '-i', '--ini',
             dest='ini_config',
             default='development.ini',
@@ -33,13 +29,14 @@ class UpdateMessagesTool(ToolCommand):
             help='The locales to update or create.'),
     )
 
-    def run(self, package_dir, ini_config, ini_section, locales):
+    def run(self, ini_config, ini_section, locales):
         if not locales:
             cp = ConfigParser()
             cp.read(ini_config)
             locales = config_list(cp.get(ini_section, 'available_languages'))
 
-        locale_dir = os.path.join(package_dir, 'locale')
+        package_name = run_setup('setup.py', stop_after='init').get_name()
+        locale_dir = os.path.join(package_name, 'locale')
         pot_filename = os.path.join(locale_dir, 'messages.pot')
 
         # delete existing .mo files
@@ -63,6 +60,6 @@ class UpdateMessagesTool(ToolCommand):
 
         # update and compile .po files
         run_setup('setup.py', [
-            'update_catalog', '-i', pot_filename, 'd', locale_dir])
+            'update_catalog', '-i', pot_filename, '-d', locale_dir])
         run_setup('setup.py', [
             'compile_catalog', '-d', locale_dir])

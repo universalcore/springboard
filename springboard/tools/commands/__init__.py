@@ -15,4 +15,5 @@ __all__ = [
     'BootstrapTool',
     'StartAppTool',
     'ImportContentTool',
+    'UpdateMessagesTool',
 ]
