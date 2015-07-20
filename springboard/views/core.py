@@ -19,6 +19,10 @@ class CoreViews(SpringboardViews):
     def index_view(self):
         return self.context()
 
+    @view_config(route_name='health', renderer='json')
+    def health(self):
+        return {}
+
     @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category',
                  renderer='springboard:templates/category.jinja2')
