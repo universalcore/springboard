@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.1.0
+-----
+- enable i18n for new springboard apps
+- add update_messages command to manage translations
+
 3.0.5
 -----
 - add uwsgi to dependencies
