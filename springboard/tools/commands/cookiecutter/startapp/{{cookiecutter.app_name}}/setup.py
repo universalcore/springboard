@@ -34,4 +34,8 @@ setup(name='{{cookiecutter.app_name}}',
           'paste.app_factory': [
               'main = {{cookiecutter.app_name}}.application:main',
           ],
-      })
+      },
+      message_extractors={'.': [
+          ('**.py', 'python', None),
+          ('**.jinja2', 'jinja2', None),
+      ]})

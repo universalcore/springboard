@@ -1,5 +1,3 @@
-import os
-
 from pyramid.view import view_config
 from pyramid.view import notfound_view_config
 from pyramid.httpexceptions import HTTPFound
@@ -7,8 +5,7 @@ from pyramid.response import Response
 
 from springboard.utils import ga_context, Paginator
 from springboard.views.base import SpringboardViews
-
-from unicore.distribute.tasks import fastforward
+from springboard.tasks import pull
 
 
 ONE_YEAR = 31536000
@@ -16,10 +13,15 @@ ONE_YEAR = 31536000
 
 class CoreViews(SpringboardViews):
 
+    @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home',
                  renderer='springboard:templates/home.jinja2')
     def index_view(self):
         return self.context()
+
+    @view_config(route_name='health', renderer='json')
+    def health(self):
+        return {}
 
     @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category',
@@ -93,9 +95,11 @@ class CoreViews(SpringboardViews):
 
     @view_config(route_name='api_notify', renderer='json')
     def api_notify(self):
-        for working_dir, index_prefix in zip(self.all_repo_paths,
-                                             self.all_index_prefixes):
-            fastforward.delay(os.path.abspath(working_dir), index_prefix)
+        for repo_url, index_prefix in zip(self.all_repo_urls,
+                                          self.all_index_prefixes):
+            pull.delay(repo_url=repo_url,
+                       index_prefix=index_prefix,
+                       es=self.es_settings)
         return {}
 
     @notfound_view_config(renderer='springboard:templates/404.jinja2')
@@ -103,12 +107,14 @@ class CoreViews(SpringboardViews):
         self.request.response.status = 404
         return self.context()
 
+    @ga_context(lambda context: {'dt': 'Choose Language', })
     @view_config(
         route_name='locale_change',
         renderer='springboard:templates/locale_change.jinja2')
     def locale_change(self):
         return self.context()
 
+    @ga_context(lambda context: {'dt': 'Set Language', })
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
     def set_locale_cookie(self):

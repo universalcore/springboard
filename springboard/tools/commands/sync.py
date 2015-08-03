@@ -10,7 +10,7 @@ from springboard.tools.commands.base import (
 class SyncDataTool(SpringboardToolCommand):
 
     command_name = 'sync-data'
-    command_help_text = 'Sync data from a repo with elastic-git'
+    command_help_text = 'Sync data from a local repo with elastic-git'
     command_arguments = SpringboardToolCommand.command_arguments + (
         CommandArgument(
             'repo_name',

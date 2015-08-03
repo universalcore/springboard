@@ -14,5 +14,7 @@ def main(global_config, **settings):
 
     config = Configurator(settings=defaults)
     config.include('springboard.config')
+    config.add_translation_dirs('springboard:locale/')
+    config.configure_celery(global_config['__file__'])
 
     return config.make_wsgi_app()

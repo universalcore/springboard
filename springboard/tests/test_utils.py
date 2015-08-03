@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from mock import patch
@@ -7,7 +8,8 @@ from elasticgit.search import SM
 
 from springboard.tests.base import SpringboardTestCase
 from springboard.utils import (
-    parse_repo_name, config_list, config_dict, Paginator)
+    parse_repo_name, config_list, config_dict, Paginator,
+    is_remote_repo_url, repo_url, CachingRepoHelper)
 
 
 class TestUtils(TestCase):
@@ -43,6 +45,31 @@ class TestUtils(TestCase):
             'elastic': 'search',
         }, config_dict('foo=bar\ngum=tree\nelastic=search\n'))
         self.assertEqual({}, config_dict(''))
+
+    def test_is_remote_repo_url(self):
+        self.assertTrue(is_remote_repo_url('http://domain/repo/foo'))
+        self.assertTrue(is_remote_repo_url('https://domain/repo/foo'))
+        self.assertFalse(is_remote_repo_url('/repos/foo'))
+        self.assertFalse(is_remote_repo_url('foo'))
+
+    def test_repo_url(self):
+        self.assertEqual(repo_url('repos', 'http://domain/repo/foo'),
+                         'http://domain/repo/foo')
+        self.assertEqual(repo_url('repos', 'https://domain/repo/foo'),
+                         'https://domain/repo/foo')
+        self.assertEqual(repo_url('repos', '/bar/foo'), '/bar/foo')
+        self.assertEqual(repo_url('repos', 'foo'),
+                         os.path.abspath('repos/foo'))
+
+    @patch('springboard.utils.RepoHelper.active_branch_name')
+    def test_cachingrepohelper(self, mocked_branch_name):
+        mocked_branch_name.return_value = 'branch-foo'
+        repo = CachingRepoHelper('http://domain/repo/foo')
+        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
+        # check that 2nd call is cached
+        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
 
 
 class TestPaginator(TestCase):

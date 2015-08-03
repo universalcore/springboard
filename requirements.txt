@@ -1,4 +1,4 @@
-elastic-git>=1.1.0
+elastic-git>=1.4.0
 unicore.content
 unicore.google
 unicore.distribute
@@ -7,6 +7,7 @@ pyramid
 pyramid-beaker>=0.8
 pyramid_jinja2
 pyramid_celery>=2.0.0rc4
+pyramid_redis
 pyyaml
 waitress
 python-dateutil
@@ -18,3 +19,5 @@ pycountry==1.10
 babel
 raven==5.0.0
 gunicorn
+uwsgi==2.0.8
+

@@ -12,10 +12,13 @@ with open(os.path.join(here, 'requirements.txt')) as f:
 with open(os.path.join(here, 'VERSION')) as f:
     version = f.read().strip()
 
+with open(os.path.join(here, 'CHANGES.rst')) as f:
+    CHANGES = f.read().strip()
+
 setup(name='springboard',
       version=version,
       description='Springboard',
-      long_description=README,
+      long_description=README + '\n\n' + CHANGES,
       classifiers=[
       "Programming Language :: Python",
       "Topic :: Internet :: WWW/HTTP",
@@ -34,4 +37,8 @@ setup(name='springboard',
       entry_points={
           'paste.app_factory': ['main = springboard.application:main'],
           'console_scripts': ['springboard = springboard.tools.main:main'],
-      })
+      },
+      message_extractors={'.': [
+          ('**.py', 'python', None),
+          ('**.jinja2', 'jinja2', None),
+      ]})

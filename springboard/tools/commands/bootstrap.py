@@ -13,7 +13,8 @@ class BootstrapTool(CloneRepoTool,
                     SyncDataTool):
 
     command_name = 'bootstrap'
-    command_help_text = 'Tools for bootstrapping a new content repository.'
+    command_help_text = (
+        'Tools for bootstrapping new content repositories locally.')
     command_arguments = SpringboardToolCommand.command_arguments
 
     def run(self, config, verbose, clobber, repo_dir):

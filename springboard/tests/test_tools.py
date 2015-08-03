@@ -1,15 +1,18 @@
 import os
 import shutil
+import responses
 from ConfigParser import ConfigParser
 from StringIO import StringIO
 
 import yaml
 
+from mock import patch, Mock
+
 from springboard.tests import SpringboardTestCase
 from springboard.utils import parse_repo_name
 from springboard.tools.commands import (
     CloneRepoTool, CreateIndexTool, CreateMappingTool, SyncDataTool,
-    BootstrapTool, ImportContentTool)
+    BootstrapTool, ImportContentTool, UpdateMessagesTool)
 from springboard.tools.commands.base import YAMLFile
 
 
@@ -228,13 +231,11 @@ class TestImportContentTool(SpringboardToolTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
-
-    def test_import(self):
-        tool = ImportContentTool()
-        tool.stdout = StringIO()
-        config = self.mk_workspace_config(self.workspace)
-        config['repositories'] = {}
-        config['models'] = {
+        self.tool = ImportContentTool()
+        self.tool.stdout = StringIO()
+        self.config = self.mk_workspace_config(self.workspace)
+        self.config['repositories'] = {}
+        self.config['models'] = {
             'elasticgit.tests.base.TestPerson': {
                 'properties': {
                     'name': {
@@ -244,33 +245,121 @@ class TestImportContentTool(SpringboardToolTestCase):
                 }
             }
         }
-
-        ini_config = self.mk_configfile({
+        self.ini_config = self.mk_configfile({
             'app:main': {
-                'unicore.content_repos': '',
+                'unicore.content_repo_urls': '',
             }
         })
+        _, self.yaml_config = self.mk_tempfile()
 
-        _, yaml_config = self.mk_tempfile()
-        tool.run(config=(yaml_config, config),
-                 verbose=True,
-                 clobber=False,
-                 repo_dir=self.working_dir,
-                 repo_url=self.workspace.working_dir,
-                 ini_config=ini_config,
-                 ini_section='app:main',
-                 update_config=True,
-                 repo_name=None)
+    def test_import_local(self):
+        self.tool.run(
+            config=(self.yaml_config, self.config),
+            verbose=True,
+            clobber=False,
+            repo_dir=self.working_dir,
+            repo_url=self.workspace.working_dir,
+            ini_config=self.ini_config,
+            ini_section='app:main',
+            update_config=True,
+            repo_name=None,
+            repo_host=None)
 
         cp = ConfigParser()
-        cp.read(ini_config)
+        cp.read(self.ini_config)
         self.assertEqual(
-            cp.get('app:main', 'unicore.content_repos').strip(),
+            cp.get('app:main', 'unicore.content_repo_urls').strip(),
             os.path.basename(self.workspace.working_dir))
 
-        with open(yaml_config, 'r') as fp:
+        with open(self.yaml_config, 'r') as fp:
             data = yaml.safe_load(fp)
             repo_name = parse_repo_name(self.workspace.working_dir)
             self.assertEqual(data['repositories'], {
                 repo_name: self.workspace.working_dir
             })
+
+    @responses.activate
+    def test_import_remote(self):
+        repo_name = parse_repo_name(self.workspace.working_dir)
+        repo_location = 'http://localhost:8080/repos/%s.json' % repo_name
+        responses.add_callback(
+            responses.POST,
+            'http://localhost:8080/repos.json',
+            callback=lambda _: (301, {'Location': repo_location}, ''))
+
+        self.tool.run(
+            config=(self.yaml_config, self.config),
+            verbose=True,
+            clobber=False,
+            repo_dir=self.working_dir,
+            repo_url=self.workspace.working_dir,
+            ini_config=self.ini_config,
+            ini_section='app:main',
+            update_config=True,
+            repo_name=None,
+            repo_host='http://localhost:8080')
+
+        cp = ConfigParser()
+        cp.read(self.ini_config)
+        self.assertEqual(
+            cp.get('app:main', 'unicore.content_repo_urls').strip(),
+            repo_location)
+
+        with open(self.yaml_config, 'r') as fp:
+            data = yaml.safe_load(fp)
+            self.assertEqual(data['repositories'], {
+                repo_name: self.workspace.working_dir
+            })
+
+
+class TestUpdateMessagesTool(SpringboardToolTestCase):
+
+    @patch('springboard.tools.commands.update_messages.run_setup')
+    def test_update_messages(self, mocked_run_setup):
+        tool = UpdateMessagesTool()
+        tool.stdout = StringIO()
+        ini_config = self.mk_configfile({
+            'app:main': {
+                'available_languages': 'eng_GB\npor_PT',
+            }
+        })
+        mocked_run_setup.return_value = Mock(get_name=Mock(return_value='foo'))
+
+        tool.run(
+            ini_config=ini_config,
+            ini_section='app:main',
+            locales=[])
+
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['extract_messages', '-o', 'foo/locale/messages.pot'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['init_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale', '-l', 'por_PT'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['init_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale', '-l', 'eng_GB'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['update_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale'])
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['compile_catalog', '-d', 'foo/locale'])
+
+        mocked_run_setup.reset_mock()
+        tool.run(
+            ini_config=ini_config,
+            ini_section='app:main',
+            locales=['swa_KE'])
+
+        mocked_run_setup.assert_any_call(
+            'setup.py',
+            ['init_catalog', '-i', 'foo/locale/messages.pot',
+             '-d', 'foo/locale', '-l', 'swa_KE'])
+        init_calls = filter(
+            lambda call: len(call[0]) > 1 and call[0][1][0] == 'init_catalog',
+            mocked_run_setup.call_args_list)
+        self.assertEqual(len(init_calls), 1)
