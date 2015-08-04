@@ -89,27 +89,23 @@ class TestSearch(SpringboardTestCase):
         self.assertTrue('Next' in resp.body)
 
     def test_search_language_filter(self):
-        [category_eng] = self.mk_categories(
-            self.workspace, count=1, language='eng_GB',
-            title='English Category')
-        self.mk_pages(
-            self.workspace, count=1, language='eng_GB',
-            primary_category=category_eng.uuid,
-            content='Page for mother test page')
-        [category_spa] = self.mk_categories(
-            self.workspace, count=1, language='spa_ES',
-            title='Spanish Category')
-        self.mk_pages(
-            self.workspace, count=1, language='spa_ES',
-            primary_category=category_spa.uuid,
-            content='Page for mother test page')
+        page_eng = Page({
+            'title': 'English Mother Page', 'language': 'eng_GB',
+            'position': 2, 'content': 'Page for english mother test page'})
+        self.workspace.save(page_eng, 'add english page')
+        page_spa = Page({
+            'title': 'Spanish Mother Page', 'language': 'spa_ES',
+            'position': 2, 'content': 'Page for spanish mother test page'})
+        self.workspace.save(page_spa, 'add spanish page')
+        self.workspace.refresh_index()
 
         self.app.get('/locale/?language=eng_GB', status=302)
         resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
-        self.assertTrue('English Category' in resp.body)
-        self.assertFalse('Spanish Category' in resp.body)
+        print(resp)
+        self.assertTrue('English Mother Page' in resp.body)
+        self.assertFalse('Spanish Mother Page' in resp.body)
 
         self.app.get('/locale/?language=spa_ES', status=302)
         resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
-        self.assertTrue('Spanish Category' in resp.body)
-        self.assertFalse('English Category' in resp.body)
+        self.assertTrue('Spanish Mother Page' in resp.body)
+        self.assertFalse('English Mother Page' in resp.body)
