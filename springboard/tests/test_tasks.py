@@ -33,11 +33,11 @@ class TestTasks(SpringboardTestCase):
             local_repo_url,
             index_prefix='foo',
             es=es)
-        mocked_workspace.pull.assert_called_once()
-        mocked_rsm.assert_not_called()
+        self.assertEqual(mocked_workspace.pull.call_count, 1)
+        self.assertFalse(mocked_workspace.called)
 
         mocked_workspace.reset_mock()
         pull.delay(remote_repo_url, index_prefix='foo', es=es)
         mocked_rsm.assert_called_once_with(remote_repo_url)
-        mocked_rsm.pull.assert_called_once()
-        mocked_workspace.assert_not_called()
+        self.assertEqual(mocked_rsm.pull.call_count, 1)
+        self.assertFalse(mocked_workspace.called)
