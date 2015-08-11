@@ -101,7 +101,6 @@ class TestSearch(SpringboardTestCase):
 
         self.app.get('/locale/?language=eng_GB', status=302)
         resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
-        print(resp)
         self.assertTrue('English Mother Page' in resp.body)
         self.assertFalse('Spanish Mother Page' in resp.body)
 
