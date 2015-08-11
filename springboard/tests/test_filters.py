@@ -10,7 +10,7 @@ from springboard.tests import SpringboardTestCase
 from springboard.filters import (
     format_date_filter, thumbor_filter, markdown_filter,
     language_direction_filter, paginate_filter,
-    get_category_title_filter)
+    get_category_title_filter, display_language_name_filter)
 
 
 class TestFilters(SpringboardTestCase):
@@ -86,3 +86,7 @@ class TestFilters(SpringboardTestCase):
         self.assertEqual(
             get_category_title_filter({}, cat_test2.uuid, cat_array),
             'Test Category 2')
+
+    def test_display_language_name_filter(self):
+        self.assertEqual(display_language_name_filter({}, 'eng_GB'), 'English')
+        self.assertEqual(display_language_name_filter({}, 'swa_KE'), 'Kiswahili')
