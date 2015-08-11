@@ -88,5 +88,7 @@ class TestFilters(SpringboardTestCase):
             'Test Category 2')
 
     def test_display_language_name_filter(self):
-        self.assertEqual(display_language_name_filter({}, 'eng_GB'), 'English')
-        self.assertEqual(display_language_name_filter({}, 'swa_KE'), 'Kiswahili')
+        self.assertEqual(
+            display_language_name_filter({}, 'eng_GB'), 'English')
+        self.assertEqual(
+            display_language_name_filter({}, 'swa_KE'), 'Kiswahili')
