@@ -82,7 +82,7 @@ class TestViews(SpringboardTestCase):
 
         views = CoreViews(request)
         response = views.api_notify()
-        mock_delay.assert_called_once()
+        self.assertEqual(mock_delay.call_count, 1)
         args, kwargs = mock_delay.call_args
         self.assertEqual(response, {})
         self.assertEqual(kwargs['repo_url'], self.workspace.working_dir)
