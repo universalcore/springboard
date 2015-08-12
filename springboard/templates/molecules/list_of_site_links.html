@@ -1,0 +1,9 @@
+<!-- Assumed that list always includes home -->
+{% macro list_of_site_links(main_navigation_items, styling_classes) -%}
+<ul class="nav {{styling_classes}}" role="navigation">
+    <li><a href="/">{{gettext('Home')}}</a></li>
+    {% for nav in main_navigation_items %}
+        <li><a href="{{'category'|route_url(uuid=nav.uuid)}}">{{nav.title}}</a></li>
+    {% endfor %}
+</ul>
+{%- endmacro %}

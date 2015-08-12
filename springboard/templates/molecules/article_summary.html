@@ -1,0 +1,9 @@
+{% macro article_summary(page) -%}
+    <a href="{{'page'|route_url(uuid=page.uuid)}}">
+        {% if page.image and page.image_host %}
+            <img alt='{{page.title}}' src="{{page.image_host}}{{page.image|thumbor(45, 45)}}"/>
+        {% endif %}
+        <h2>{{page.title}}</h2>
+        <p>{{page.description}}</p> 
+    </a>
+{%- endmacro %}

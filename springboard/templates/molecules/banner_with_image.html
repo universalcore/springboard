@@ -1,0 +1,9 @@
+{% macro banner_with_image(localisation, src) -%}
+<div class ="banner">
+    {% if localisation and localisation.image_host and localisation.image %}
+        <img alt="" src="{{localisation.image_host}}{{localisation|thumbor(320)}}"/>
+    {% else %}
+        <img src="{{src|static_url}}" srcset="{{srcset}}" alt="{{alt}}">
+    {% endif %}
+</div>
+{%- endmacro %}

@@ -1,0 +1,5 @@
+{% macro article_summary_no_image(page) -%}
+  <a href="{{'page'|route_url(uuid=page.uuid)}}">
+    <h2>{{page.title}}</h2>
+    <p>{{page.description}}</p> </a>
+{%- endmacro %}

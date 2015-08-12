@@ -1,0 +1,7 @@
+{% macro search_summary(num_of_results, query) -%}
+  {% if num_of_results==1 %}
+    <p>1 search result for: <b>{{query}}</b></p>
+  {% elif num_of_results > 1 %}
+    <p>{{num_of_results}} search results for: <b>{{query}}</b></p>
+  {% endif %}
+{%- endmacro %}

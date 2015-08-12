@@ -1,0 +1,13 @@
+{% macro list_of_languages(language, display_languages, styling_classes) -%}
+<ul class="nav list_of_languages list-inline {{styling_classes}}" role="navigation">
+	<li>
+		<a>{{language|display_language_name}}</a>
+	</li>
+	{% for lang_code in display_languages %}
+	<li>
+		<a href="{{'locale_matched'|route_url(language=lang_code)}}">{{lang_code|display_language_name}}</a>
+	</li>
+	{% endfor %}
+	<li><a href="{{'locale_change'|route_url}}">&gt;&gt;</a></li>
+</ul>
+{%- endmacro %}

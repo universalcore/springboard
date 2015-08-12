@@ -4,11 +4,13 @@ from pyramid import testing
 
 from jinja2 import Markup
 from libthumbor import CryptoURL
+from unicore.content.models import Category
 
 from springboard.tests import SpringboardTestCase
 from springboard.filters import (
     format_date_filter, thumbor_filter, markdown_filter,
-    language_direction_filter, paginate_filter)
+    language_direction_filter, paginate_filter,
+    get_category_title_filter, display_language_name_filter)
 
 
 class TestFilters(SpringboardTestCase):
@@ -71,3 +73,22 @@ class TestFilters(SpringboardTestCase):
                                     slider_value=2)
         self.assertEqual(paginator.get_page(), [3])
         self.assertEqual(paginator.page_numbers(), [1, 2, 3])
+
+    def test_get_category_title_filter(self):
+        cat_test1 = Category({
+            'title': 'Test Category 1', 'language': 'eng_GB'})
+        cat_test2 = Category({
+            'title': 'Test Category 2', 'language': 'eng_GB'})
+        cat_array = [cat_test1, cat_test2]
+        self.assertEqual(
+            get_category_title_filter({}, cat_test1.uuid, cat_array),
+            'Test Category 1')
+        self.assertEqual(
+            get_category_title_filter({}, cat_test2.uuid, cat_array),
+            'Test Category 2')
+
+    def test_display_language_name_filter(self):
+        self.assertEqual(
+            display_language_name_filter({}, 'eng_GB'), 'English')
+        self.assertEqual(
+            display_language_name_filter({}, 'swa_KE'), 'Kiswahili')
