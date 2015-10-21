@@ -62,6 +62,15 @@ class TestViews(SpringboardTestCase):
         self.assertEqual(context['all_categories'].count(), 1)
         self.assertEqual(context['all_pages'].count(), 1)
 
+    def test_page_with_no_category(self):
+        [page] = self.mk_pages(self.workspace, count=1)
+        views = CoreViews(
+            self.mk_request(matchdict={'uuid': page.uuid}))
+        context = views.page()
+        self.assertEqual(context['page'].uuid, page.uuid)
+        self.assertEqual(context['all_categories'].count(), 0)
+        self.assertEqual(context['all_pages'].count(), 1)
+
     def test_flatpage(self):
         [page] = self.mk_pages(self.workspace, count=1)
         views = CoreViews(
@@ -82,7 +91,7 @@ class TestViews(SpringboardTestCase):
 
         views = CoreViews(request)
         response = views.api_notify()
-        mock_delay.assert_called_once()
+        self.assertEqual(mock_delay.call_count, 1)
         args, kwargs = mock_delay.call_args
         self.assertEqual(response, {})
         self.assertEqual(kwargs['repo_url'], self.workspace.working_dir)

@@ -1,6 +1,6 @@
 from pyramid import testing
 
-from mock import patch
+from mock import patch, MagicMock
 
 from springboard.tests.base import SpringboardTestCase
 from springboard.tasks import pull
@@ -23,21 +23,25 @@ class TestTasks(SpringboardTestCase):
 
     @patch('springboard.tasks.RemoteStorageManager')
     @patch('springboard.tasks.EG.workspace')
-    def test_pull(self, mocked_workspace, mocked_rsm):
+    def test_pull(self, mocked_workspace_init, mocked_rsm_init):
         local_repo_url = repo_url('repos', 'foo')
         remote_repo_url = repo_url('repos', 'http://localhost/repos/foo.json')
         es = {'urls': ['http://host:port']}
+        mocked_workspace = MagicMock()
+        mocked_workspace_init.return_value = mocked_workspace
+        mocked_rsm = MagicMock()
+        mocked_rsm_init.return_value = mocked_rsm
 
         pull.delay(local_repo_url, index_prefix='foo', es=es)
-        mocked_workspace.assert_called_once_with(
+        mocked_workspace_init.assert_called_once_with(
             local_repo_url,
             index_prefix='foo',
             es=es)
-        mocked_workspace.pull.assert_called_once()
-        mocked_rsm.assert_not_called()
+        self.assertEqual(mocked_workspace.pull.call_count, 1)
+        self.assertFalse(mocked_rsm_init.called)
 
-        mocked_workspace.reset_mock()
+        mocked_workspace_init.reset_mock()
         pull.delay(remote_repo_url, index_prefix='foo', es=es)
-        mocked_rsm.assert_called_once_with(remote_repo_url)
-        mocked_rsm.pull.assert_called_once()
-        mocked_workspace.assert_not_called()
+        mocked_rsm_init.assert_called_once_with(remote_repo_url)
+        self.assertEqual(mocked_rsm.pull.call_count, 1)
+        self.assertFalse(mocked_workspace_init.called)

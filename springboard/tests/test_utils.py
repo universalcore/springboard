@@ -66,10 +66,10 @@ class TestUtils(TestCase):
         mocked_branch_name.return_value = 'branch-foo'
         repo = CachingRepoHelper('http://domain/repo/foo')
         self.assertEqual(repo.active_branch_name(), 'branch-foo')
-        mocked_branch_name.assert_called_once()
+        self.assertEqual(mocked_branch_name.call_count, 1)
         # check that 2nd call is cached
         self.assertEqual(repo.active_branch_name(), 'branch-foo')
-        mocked_branch_name.assert_called_once()
+        self.assertEqual(mocked_branch_name.call_count, 1)
 
 
 class TestPaginator(TestCase):
