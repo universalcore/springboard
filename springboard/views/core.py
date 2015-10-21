@@ -81,8 +81,10 @@ class CoreViews(SpringboardViews):
     def page(self):
         uuid = self.request.matchdict['uuid']
         [page] = self.all_pages.filter(uuid=uuid)
-        [category] = self.all_categories.filter(
-            uuid=page.primary_category)
+        category = None
+        if page.primary_category:
+            [category] = self.all_categories.filter(
+                uuid=page.primary_category)
         return self.context(category=category,
                             page=page)
 
