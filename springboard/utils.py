@@ -8,6 +8,16 @@ from elasticutils import S
 from elasticgit.search import RepoHelper
 
 
+default_excluded_paths = ['/health/', '/api/notify/']
+
+
+def excluded_path(path, excluded_paths):
+    excl_paths = excluded_paths.split(',') + default_excluded_paths
+    return (
+        path and
+        any([p for p in excl_paths if path.startswith(p)]))
+
+
 def parse_repo_name(repo_url):
     pr = urlparse(repo_url)
     _, _, repo_name_dot_ext = pr.path.rpartition('/')
