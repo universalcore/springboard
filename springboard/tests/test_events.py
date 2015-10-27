@@ -127,7 +127,7 @@ class TestEvents(SpringboardTestCase):
         """
         self.app = self.mk_app(self.workspace, settings={
             'ga.profile_id': 'UA-some-id',
-            'ga.excluded_paths': '/locale/change/,/search/'
+            'ga.excluded_paths': '/locale/change/\n/search/'
         })
 
         self.app.get('/locale/change/', status=200, extra_environ={

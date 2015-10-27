@@ -39,7 +39,7 @@ def new_response(event):
     excluded_paths = registry.settings.get('ga.excluded_paths', '')
 
     profile_id = registry.settings.get('ga.profile_id')
-    if profile_id and not utils.excluded_path(request.path, excluded_paths):
+    if profile_id and not utils.is_excluded_path(request.path, excluded_paths):
         client_id = request.cookies.get('ga_client_id', uuid4().hex)
         response.set_cookie('ga_client_id', value=client_id, max_age=ONE_YEAR)
         pageview.delay(profile_id, client_id, request.google_analytics)
