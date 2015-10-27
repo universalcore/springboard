@@ -111,3 +111,33 @@ class TestEvents(SpringboardTestCase):
         })
         ((profile_id, client_id, data), _) = mock_task.call_args_list[1]
         self.assertEqual(data['dt'], self.page.title)
+
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_pageviews_default_excluded_path(self, mock_task):
+        self.app.get('/health/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
+
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_pageviews_custom_excluded_path(self, mock_task):
+        """
+        Excludes both locale change and search from GA pageviews
+        """
+        self.app = self.mk_app(self.workspace, settings={
+            'ga.profile_id': 'UA-some-id',
+            'ga.excluded_paths': '/locale/change/\n/search/'
+        })
+
+        self.app.get('/locale/change/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
+
+        self.app.get('/search/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
