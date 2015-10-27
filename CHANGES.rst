@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+3.1.2
+-----
+- exclude system paths from GA pageviews
 
 3.1.0
 -----
