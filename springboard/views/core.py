@@ -123,8 +123,10 @@ class CoreViews(SpringboardViews):
         response = Response()
         language = self.request.matchdict.get('language') or \
             self.request.GET.get('language')
+        next = self.request.matchdict.get('next') or \
+            self.request.GET.get('next') or '/'
 
         if language:
             response.set_cookie('_LOCALE_', value=language, max_age=ONE_YEAR)
 
-        return HTTPFound(location='/', headers=response.headers)
+        return HTTPFound(location=next, headers=response.headers)
