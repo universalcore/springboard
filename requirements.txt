@@ -2,6 +2,7 @@ elastic-git>=1.4.0
 unicore.content
 unicore.google
 unicore.distribute
+unicore.languages
 unicore.hub.client>=0.1.1
 pyramid
 pyramid-beaker>=0.8
