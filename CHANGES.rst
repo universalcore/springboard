@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+3.1.3
+-----
+- add fallback for unknown languages
+
 3.1.2
 -----
 - exclude system paths from GA pageviews
