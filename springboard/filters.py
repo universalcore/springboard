@@ -9,11 +9,11 @@ from markdown import markdown
 from pyramid.threadlocal import get_current_registry
 
 from jinja2 import Markup
-from babel import Locale
+from babel import Locale, UnknownLocaleError
 from pycountry import languages
 
 from springboard.utils import Paginator
-
+from unicore.languages import constants
 
 # known right-to-left language codes
 KNOWN_RTL_LANGUAGES = {"urd", "ara", "arc", "per", "heb", "kur", "yid"}
@@ -54,7 +54,12 @@ def markdown_filter(ctx, content):
 def display_language_name_filter(ctx, locale):
     language_code, _, country_code = locale.partition('_')
     term_code = languages.get(bibliographic=language_code).terminology
-    return Locale.parse(term_code).language_name
+
+    try:
+        return Locale.parse(term_code).language_name
+    except UnknownLocaleError:
+        # Fallback value is the generated value in English or the code
+        return constants.LANGUAGES.get(term_code, locale)
 
 
 def language_direction_filter(locale):
