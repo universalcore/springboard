@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+3.1.4
+-----
+- redirect to 'next' GET parameter when changing language
+
 3.1.3
 -----
 - add fallback for unknown languages
