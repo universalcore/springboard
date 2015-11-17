@@ -8,7 +8,7 @@ from libthumbor import CryptoURL
 from springboard.tests import SpringboardTestCase
 from springboard.filters import (
     format_date_filter, thumbor_filter, markdown_filter,
-    language_direction_filter, paginate_filter)
+    language_direction_filter, paginate_filter, display_language_name_filter)
 
 
 class TestFilters(SpringboardTestCase):
@@ -71,3 +71,9 @@ class TestFilters(SpringboardTestCase):
                                     slider_value=2)
         self.assertEqual(paginator.get_page(), [3])
         self.assertEqual(paginator.page_numbers(), [1, 2, 3])
+
+    def test_unknown_language_fallback(self):
+        self.assertEqual(
+            display_language_name_filter({}, 'kur_IQ'), 'Kurdish')
+        self.assertEqual(
+            display_language_name_filter({}, 'spa_ES'), u'espa\xf1ol')
