@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+3.2.0
+-----
+- add marathon info to health check
+
 3.1.4
 -----
 - redirect to 'next' GET parameter when changing language

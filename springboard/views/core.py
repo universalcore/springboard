@@ -1,3 +1,5 @@
+from os import environ
+
 from pyramid.view import view_config
 from pyramid.view import notfound_view_config
 from pyramid.httpexceptions import HTTPFound
@@ -21,7 +23,9 @@ class CoreViews(SpringboardViews):
 
     @view_config(route_name='health', renderer='json')
     def health(self):
-        return {}
+        app_id = environ.get('MARATHON_APP_ID', None)
+        ver = environ.get('MARATHON_APP_VERSION', None)
+        return {'id': app_id, 'version': ver}
 
     @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category',
