@@ -1,4 +1,7 @@
 import mock
+import json
+
+from os import environ
 
 from datetime import datetime
 
@@ -40,7 +43,16 @@ class TestViews(SpringboardTestCase):
 
     def test_health(self):
         app = self.mk_app(self.workspace, settings=self.settings)
-        app.get('/health/', status=200)
+        environ['MARATHON_APP_ID'] = 'marathon-app-id'
+        environ['MARATHON_APP_VERSION'] = 'marathon-app-version'
+        resp = app.get('/health/', status=200)
+        data = json.loads(resp.body)
+        self.assertEqual(data, {
+            'id': 'marathon-app-id',
+            'version': 'marathon-app-version',
+        })
+        environ.pop('MARATHON_APP_ID')
+        environ.pop('MARATHON_APP_VERSION')
 
     def test_category(self):
         [category] = self.mk_categories(self.workspace, count=1)
