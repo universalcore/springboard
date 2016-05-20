@@ -78,4 +78,6 @@ class TestFilters(SpringboardTestCase):
         self.assertEqual(
             display_language_name_filter({}, 'spa_ES'), u'espa\xf1ol')
         self.assertEqual(
-            display_language_name_filter({}, 'ckb_IQ'), u'کوردیی ناوەندی')
+            display_language_name_filter({}, 'ckb_IQ'), u'\u06a9\u0648\u0631'
+            u'\u062f\u06cc\u06cc '
+            u'\u0646\u0627\u0648\u06d5\u0646\u062f\u06cc')
