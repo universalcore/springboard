@@ -53,8 +53,10 @@ def markdown_filter(ctx, content):
 @contextfilter
 def display_language_name_filter(ctx, locale):
     language_code, _, country_code = locale.partition('_')
-    term_code = languages.get(bibliographic=language_code).terminology
-
+    try:
+        term_code = languages.get(bibliographic=language_code).terminology
+    except KeyError:
+        term_code = language_code
     try:
         return Locale.parse(term_code).language_name
     except UnknownLocaleError:
