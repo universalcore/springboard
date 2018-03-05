@@ -13,7 +13,7 @@ Springboard
     :target: https://springboard.readthedocs.org
     :alt: Springboard Documentation
 
-.. image:: https://pypip.in/version/springboard/badge.svg
+.. image:: https://img.shields.io/pypi/v/springboard.svg
     :target: https://pypi.python.org/pypi/springboard
     :alt: Pypi Package
 
